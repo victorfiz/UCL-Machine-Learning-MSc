@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:  # Optional: enables manual triggering
 
 jobs:
   build:
@@ -15,11 +16,15 @@ jobs:
       - name: Compile LaTeX
         uses: dante-ev/latex-action@v2
         with:
-          root_file: CW_final.tex
+          root_file: CW_final.tex  # Ensure this is the correct filename for your main .tex file
+
+      - name: List Files for Debugging  # Optional step to confirm file presence
+        run: ls -R
 
       - name: Upload PDF
         uses: actions/upload-artifact@v2
         with:
           name: compiled-pdf
-          path: CW_final.pdf
+          path: CW_final.pdf  # Confirm this matches the actual PDF output filename
+
 
