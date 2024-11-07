@@ -1,29 +1,31 @@
-name: Compile LaTeX Document
+name: Build LaTeX Document
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Optional: allows manual triggering
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4  # Use the latest version of checkout
 
-      - name: Compile LaTeX
-        uses: dante-ev/latex-action@v2
+      - name: Set up Docker for LaTeX
+        uses: xu-cheng/latex-action@v3  # Use a suitable action for LaTeX compilation
         with:
-          root_file: CW_final.tex
+          root_file: CW_final.tex  # Your LaTeX file
+          working_directory: supervised_learning/CW1  # Adjust based on your structure
+          latexmk_use_xelatex: false  # Set to true if you want to use XeLaTeX
 
-      - name: List Files for Debugging
-        run: ls -R
-
-      - name: Upload PDF
-        uses: actions/upload-artifact@v2
+      - name: Upload PDF Artifact
+        uses: actions/upload-artifact@v4  # Use the latest version for uploading artifacts
         with:
           name: compiled-pdf
-          path: CW_final.pdf  # Adjust if the actual PDF file has a different name
+          path: supervised_learning/CW1/CW_final.pdf  # Adjust if necessary based on where the PDF is created
 
