@@ -2,28 +2,26 @@ name: Compile LaTeX Document
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:  # Optional: allows manual triggering
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-
+        uses: actions/checkout@v4
+        
       - name: Compile LaTeX
-        uses: dante-ev/latex-action@v2
+        uses: dante-ev/latex-action@v4
         with:
           root_file: CW_final.tex
 
-      - name: List Files for Debugging
-        run: ls -R
-
       - name: Upload PDF
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: compiled-pdf
-          path: CW_final.pdf  # Adjust if the actual PDF file has a different name
+          path: CW_final.pdf
 
