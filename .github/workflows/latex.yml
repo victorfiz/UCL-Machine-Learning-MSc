@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         
       - name: Compile LaTeX
-        uses: dante-ev/latex-action@v4
+        uses: dante-ev/latex-action@v3
         with:
           root_file: CW_final.tex
 
