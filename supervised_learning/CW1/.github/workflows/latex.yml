@@ -1,29 +1,27 @@
-name: Build LaTeX Document
+name: Compile LaTeX Document
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3  # Use the latest version of checkout
+        uses: actions/checkout@v3
 
-      - name: Compile LaTeX document
+      - name: Compile LaTeX
         uses: xu-cheng/latex-action@v3  # Use xu-cheng's action for LaTeX compilation
         with:
           root_file: CW_final.tex  # Your main LaTeX file
           latexmk_use_xelatex: false  # Set to true if you want to use XeLaTeX
 
-      - name: Upload PDF Artifact
-        uses: actions/upload-artifact@v4  # Use the latest version for uploading artifacts
+      - name: Upload PDF
+        uses: actions/upload-artifact@v4
         with:
           name: compiled-pdf
           path: CW_final.pdf  # Ensure this matches the name of the generated PDF
