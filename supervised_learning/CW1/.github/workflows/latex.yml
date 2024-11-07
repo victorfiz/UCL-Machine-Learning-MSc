@@ -14,18 +14,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4  # Use the latest version of checkout
+        uses: actions/checkout@v3  # Use the latest version of checkout
 
-      - name: Set up Docker for LaTeX
-        uses: xu-cheng/latex-action@v3  # Use a suitable action for LaTeX compilation
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v3  # Use xu-cheng's action for LaTeX compilation
         with:
-          root_file: CW_final.tex  # Your LaTeX file
-          working_directory: supervised_learning/CW1  # Adjust based on your structure
+          root_file: CW_final.tex  # Your main LaTeX file
           latexmk_use_xelatex: false  # Set to true if you want to use XeLaTeX
 
       - name: Upload PDF Artifact
         uses: actions/upload-artifact@v4  # Use the latest version for uploading artifacts
         with:
           name: compiled-pdf
-          path: supervised_learning/CW1/CW_final.pdf  # Adjust if necessary based on where the PDF is created
+          path: CW_final.pdf  # Ensure this matches the name of the generated PDF
 
