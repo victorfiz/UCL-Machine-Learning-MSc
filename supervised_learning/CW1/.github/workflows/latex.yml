@@ -28,3 +28,4 @@ jobs:
           name: compiled-pdf
           path: CW_final.pdf  # Ensure this matches the name of the generated PDF
 
+# Minor update to trigger workflow
