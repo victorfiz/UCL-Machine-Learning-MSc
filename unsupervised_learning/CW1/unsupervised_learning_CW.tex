@@ -1,0 +1,503 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{bm}
+
+\title{Probabilistic and Unsupervised Learning}
+\author{Victor Fizesan}
+
+\begin{document}
+\maketitle
+
+\section{Models for binary vectors}
+
+Consider a data set of binary (black and white) images. Each image is arranged into a vector of pixels by concatenating the columns of pixels in the image. The data set has $N$ images $\{\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)}\}$ and each image has $D$ pixels, where $D$ is (number of rows $\times$ number of columns) in the image. For example, image $\mathbf{x}^{(n)}$ is a vector $(x_1^{(n)}, \dots, x_D^{(n)})$ where $x_d^{(n)} \in \{0, 1\}$ for all $n \in \{1, \dots, N\}$ and $d \in \{1, \dots, D\}$.
+
+
+\begin{enumerate}
+    \item[(a)] Explain why a multivariate Gaussian would not be an appropriate model for this data set of images. [5 marks]
+    
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+    \vspace{10pt}
+    
+    A multivariate Gaussian distribution is inappropriate for this binary image dataset because it assumes continuous values, while each pixel is binary, taking values in \(\{0, 1\}\). The Gaussian's unbounded support allows real values beyond \([0, 1]\), resulting in probabilities assigned to undefined values for binary data. Additionally, each pixel’s true marginal distribution is Bernoulli, not Gaussian, and even a Gaussian approximation (shown in Fig. 1) misrepresents the discrete nature of the data. A Gaussian distribution might be more appropriate for modeling pixel intensities, where there is a large set of possible outcomes per feature, approximating continuity.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{Screenshot 2024-11-07 at 19.32.55.png}
+        \caption{Binary Pixel Distribution with Gaussian Approximation}
+        \label{fig:enter-label}
+    \end{figure}
+    
+    \item[(b)] Assume that the images were modelled as independently and identically distributed samples from a $D$-dimensional \textbf{multivariate Bernoulli distribution} with parameter vector $\mathbf{p} = (p_1, \dots, p_D)$, which has the form
+    \[
+    P(\mathbf{x} | \mathbf{p}) = \prod_{d=1}^D p_d^{x_d}(1 - p_d)^{(1 - x_d)}
+    \]
+    where both $\mathbf{x}$ and $\mathbf{p}$ are $D$-dimensional vectors.
+    
+    What is the equation for the maximum likelihood (ML) estimate of $\mathbf{p}$? Note that you can solve for $\mathbf{p}$ directly. [5 marks]
+    
+    \vspace{10pt}
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+
+    To find the maximum likelihood (ML) estimate of \(\mathbf{p} = (p_1, \ldots, p_D)\), we maximise the likelihood of observing our dataset of binary images. Given \(N\) images, each with \(D\) pixels represented by binary vectors \(\mathbf{x}^{(n)} = (x_1^{(n)}, \ldots, x_D^{(n)})\), the likelihood of the dataset is
+    
+    \begin{equation}
+    P(\{\mathbf{x}^{(1)}, \ldots, \mathbf{x}^{(N)}\} | \mathbf{p}) = \prod_{n=1}^N \prod_{d=1}^D p_d^{x_d^{(n)}} (1 - p_d)^{(1 - x_d^{(n)})}
+    \end{equation}
+    
+    The maximum likelihood estimate \(\hat{\mathbf{p}}\) can be obtained by solving
+    
+    \begin{equation}
+    \hat{\mathbf{p}} = \arg \max_{\mathbf{p}} P(\{\mathbf{x}^{(1)}, \ldots, \mathbf{x}^{(N)}\} | \mathbf{p})
+    \end{equation}
+    
+    Taking the logarithm to simplify maximisation,
+    
+    \begin{equation}
+    \log P(\{\mathbf{x}^{(1)}, \ldots, \mathbf{x}^{(N)}\} | \mathbf{p}) = \sum_{n=1}^N \sum_{d=1}^D \left( x_d^{(n)} \log p_d + (1 - x_d^{(n)}) \log (1 - p_d) \right)
+    \end{equation}
+
+    To find the maximum likelihood estimate, differentiate the log-likelihood with respect to each \(p_d\) and set it to zero:
+    
+    \begin{equation}
+    \frac{\partial}{\partial p_d} \log P(\{\mathbf{x}^{(1)}, \ldots, \mathbf{x}^{(N)}\} | \mathbf{p}) = \sum_{n=1}^N \left( \frac{x_d^{(n)}}{p_d} - \frac{1 - x_d^{(n)}}{1 - p_d} \right) = 0
+    \end{equation}
+    
+    Let \(N_d = \sum_{n=1}^N x_d^{(n)}\), the count of "1"s in the \(d\)-th position across all images. Substitute \(N_d\) to simplify the summation:
+
+    \begin{equation}
+    \frac{N_d}{p_d} - \frac{N - N_d}{1 - p_d} = 0
+    \end{equation}
+    
+    Multiply both sides by \(p_d (1 - p_d)\) to clear the fractions:
+    
+    \begin{equation}
+    N_d (1 - p_d) - (N - N_d) p_d = 0
+    \end{equation}
+    
+    Expanding this, we get:
+    
+    \begin{equation}
+    N_d - N_d p_d = N p_d - N_d p_d
+    \end{equation}
+    
+    Rearrange terms to isolate \(p_d\) on one side:
+    
+    \begin{equation}
+    N_d = N p_d
+    \end{equation}
+    
+    Thus, the maximum likelihood estimate for each component \(p_d\) is
+    
+    \begin{equation}
+    \boxed{\hat{p}_d = \frac{N_d}{N} = \frac{\sum_{n=1}^N x_d^{(n)}}{N}}
+    \end{equation}
+    
+    This is the equation for the ML estimate of \(\mathbf{p}\), representing the probability that each pixel \(d\) is a "1" in the dataset.
+    \vspace{10pt}
+    
+
+    \item[(c)] Assuming independent Beta priors on the parameters $p_d$
+    \[
+    P(p_d) = \frac{1}{B(\alpha, \beta)} p_d^{\alpha - 1}(1 - p_d)^{\beta - 1}
+    \]
+    and $P(\mathbf{p}) = \prod_d P(p_d)$. Find the maximum a posteriori (MAP) estimator for $\mathbf{p}$. [5 marks]
+
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+    
+    \vspace{5pt}
+
+    To find the maximum a posteriori (MAP) estimate of \(\mathbf{p} = (p_1, \ldots, p_D)\) with independent Beta priors on each \(p_d\), we maximise the posterior distribution \(P(\mathbf{p} | \{\mathbf{x}^{(1)}, \ldots, \mathbf{x}^{(N)}\})\), which is proportional to the product of the likelihood \(P(\{\mathbf{x}^{(1)}, \ldots, \mathbf{x}^{(N)}\} | \mathbf{p})\) and the prior \(P(\mathbf{p})\).
+
+    Given the prior on each \(p_d\) is a Beta distribution
+    
+    \begin{equation}
+    P(p_d) = \frac{1}{B(\alpha, \beta)} p_d^{\alpha - 1} (1 - p_d)^{\beta - 1},
+    \end{equation}
+    
+    the full prior distribution for \(\mathbf{p}\) is
+    
+    \begin{equation}
+    P(\mathbf{p}) = \prod_{d=1}^D P(p_d) = \prod_{d=1}^D \frac{1}{B(\alpha, \beta)} p_d^{\alpha - 1} (1 - p_d)^{\beta - 1}
+    \end{equation}
+    
+    The posterior distribution is proportional to the product of the likelihood and the prior:
+    
+    \begin{equation}
+    P(\mathbf{p} | \{\mathbf{x}^{(1)}, \ldots, \mathbf{x}^{(N)}\}) \propto P(\{\mathbf{x}^{(1)}, \ldots, \mathbf{x}^{(N)}\} | \mathbf{p}) P(\mathbf{p})
+    \end{equation}
+    
+    Taking the logarithm, the log-posterior is
+    
+    \begin{equation}
+    \log P(\mathbf{p} | \{\mathbf{x}^{(1)}, \ldots, \mathbf{x}^{(N)}\}) = \log P(\{\mathbf{x}^{(1)}, \ldots, \mathbf{x}^{(N)}\} | \mathbf{p}) + \log P(\mathbf{p})
+    \end{equation}
+    
+    The log-likelihood term is
+    
+    \begin{equation}
+    \log P(\{\mathbf{x}^{(1)}, \ldots, \mathbf{x}^{(N)}\} | \mathbf{p}) = \sum_{n=1}^N \sum_{d=1}^D \left( x_d^{(n)} \log p_d + (1 - x_d^{(n)}) \log (1 - p_d) \right)
+    \end{equation}
+    
+    and the log-prior term, based on the Beta prior, is
+    
+    \begin{equation}
+    \log P(\mathbf{p}) = \sum_{d=1}^D \left( (\alpha - 1) \log p_d + (\beta - 1) \log (1 - p_d) \right)
+    \end{equation}
+    
+    Combining these, we get the log-posterior as:
+    
+    \begin{equation}
+    \sum_{d=1}^D \left( \sum_{n=1}^N x_d^{(n)} \log p_d + \sum_{n=1}^N (1 - x_d^{(n)}) \log (1 - p_d) + (\alpha - 1) \log p_d + (\beta - 1) \log (1 - p_d) \right)
+    \end{equation}
+    
+    To find the MAP estimate, differentiate the log-posterior with respect to each \(p_d\) and set to zero:
+    
+    \begin{equation}
+    \frac{\partial}{\partial p_d} \log P(\mathbf{p} | \{\mathbf{x}^{(1)}, \ldots, \mathbf{x}^{(N)}\}) = \frac{N_d + \alpha - 1}{p_d} - \frac{N - N_d + \beta - 1}{1 - p_d} = 0
+    \end{equation}
+    
+    where \(N_d = \sum_{n=1}^N x_d^{(n)}\), the count of "1"s at position \(d\) across all images.
+
+    \vspace{10pt}
+    
+    Rearrange to solve for \(p_d\):
+    
+    \begin{equation}
+    (N_d + \alpha - 1)(1 - p_d) = (N - N_d + \beta - 1) p_d
+    \end{equation}
+    
+    Expanding and isolating \(p_d\),
+    
+    \begin{equation}
+    \boxed{p_d = \frac{N_d + \alpha - 1}{N + \alpha + \beta - 2} = \frac{\sum_{n=1}^N x_d^{(n)} + \alpha - 1}{N + \alpha + \beta - 2}}
+    \end{equation}
+
+    \vspace{10pt}
+    
+    Download the data set \texttt{binarydigits.txt} from the course website, which contains N = 100 images with D = 64 pixels each, in an N × D matrix. These pixels can be displayed as 8 × 8 images by rearranging them. View them in Matlab by running \texttt{bindigit.m} or in Python by running \texttt{bindigit.py}.
+
+    \vspace{10pt}
+
+    \item[(d)] Write code to learn the ML parameters of a multivariate Bernoulli from this data set and display these parameters as an 8 × 8 image. Include your code with your submission, and a visualisation of the learned parameter vector as an image. (You may use Matlab, Octave or Python) [5 marks]
+
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}    
+
+     \vspace{10pt}
+
+    \begin{lstlisting}[language=Python, numbers=left, frame=single, breaklines=true]
+    import numpy as np
+    import matplotlib.pyplot as plt
+    
+    Y = np.loadtxt('binarydigits.txt')
+    
+    def calc_MLE(Y):
+        MLE = np.mean(Y, axis=0)
+        return MLE
+    
+    def plot_estimate(Y, calc_method):
+        plt.figure()
+        plt.imshow(np.reshape(calc_method(Y), (8,8)), interpolation="None", cmap='gray')
+        plt.axis('off')
+        plt.show()
+    
+    plot_estimate(Y, calc_MLE)
+    \end{lstlisting}
+
+
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{Screenshot 2024-11-08 at 15.44.47.png}
+        \caption{Maximum likelihood parameters modeled under a multivariate Bernoulli distribution}
+        \label{fig:enter-label}
+    \end{figure}
+
+    \item[(e)] Modify your code to learn MAP parameters with $\alpha = \beta = 3$. Show the new learned parameter vector for this data set as an image. Explain why this might be better or worse than the ML estimate. [5 marks]
+
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+
+    \vspace{10pt}
+
+
+    \begin{lstlisting}[language=Python, numbers=left, frame=single, breaklines=true]
+    def calc_MAP(Y, alpha=3, beta=3):
+        n, _ = Y.shape
+        MAP = (alpha - 1 + np.sum(Y, axis=0)) / (n + alpha + beta - 2)
+        return MAP
+    
+    plot_estimate(Y, calc_MAP)
+    \end{lstlisting}
+
+
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{Screenshot 2024-11-08 at 15.47.05.png}
+        \caption{MAP parameters modeled with a Beta prior, $\alpha = \beta = 3$}
+        \label{fig:enter-label}
+    \end{figure}
+
+    When comparing Maximum Likelihood (ML) and Maximum A Posteriori (MAP) estimation, the key difference is that MAP incorporates prior information, while ML relies solely on the data. ML provides unbiased estimates with sufficient data but may overfit when data is limited, especially for binary cases with infrequent events. MAP estimation uses a prior, such as Beta$(\alpha,\beta)$, to regularize estimates, stabilizing results in sparse datasets by avoiding extreme values. As the dataset, $N$, grows, MAP should approach ML. We can see this in their derived equations: (9) and (19), where as N $\to \infty$, the prior Beta parameters become overshadowed. Practically, however, MAP depends on the quality of the prior – an appropriate prior enhances estimation, but a poor prior can introduce bias, especially with small datasets. In cases where no reliable prior exists, ML is safer; with good prior knowledge, MAP can improve results.
+        
+    \end{enumerate}
+    
+\section{Model selection}
+    
+In the binary data model above, find the expressions needed to calculate the (relative) probability of the following three different models:
+    
+\begin{enumerate}
+    \item[(a)] all $D$ components are generated from a Bernoulli distribution with $p_d = 0.5$
+    \item[(b)] all $D$ components are generated from Bernoulli distributions with unknown, but identical, $p_d$
+    \item[(c)] each component is Bernoulli distributed with separate, unknown $p_d$
+\end{enumerate}
+    
+\noindent Assume that all three models are equally likely \textit{a priori}, and take the prior distributions for any unknown probabilities to be uniform. Calculate the posterior probabilities of each of the three models having generated the data in \texttt{binarydigits.txt}.
+
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+
+    
+    \vspace{10pt}
+
+    \noindent To identify the most probable model for a dataset of binary vectors, we calculate the posterior probability \( P(M_i | \mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)}) \) for each model \( M_i \), where \( i \in \{1, 2, 3\} \).
+    \vspace{5pt}
+    
+    \noindent By Bayes' theorem,
+    \begin{equation}
+        P(M_i | \mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)}) = \frac{P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | M_i) P(M_i)}{P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)})}
+    \end{equation}
+    
+    \noindent Assuming equal prior probabilities, \( P(M_i) = \frac{1}{3} \) for all \( i \), the posterior simplifies to
+    \begin{equation}
+        P(M_i | \mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)}) = \frac{P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | M_i)}{\sum_{j=1}^{3} P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | M_j)}
+    \end{equation}
+    We thus focus on calculating the likelihood \( P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | M_i) \) for each model and normalizing these likelihoods.
+    
+    \noindent
+    ---
+    
+    \noindent In \textbf{Model (a)}, each element \( x_d^{(n)} \) in the binary vectors \( \mathbf{x}^{(n)} \) is generated independently from a Bernoulli distribution with parameter \( p_d = 0.5 \). Thus, each pixel is equally likely to be 0 or 1.
+    \vspace{5pt}
+    
+    \noindent The likelihood of observing a single binary vector \( \mathbf{x}^{(n)} = (x_1^{(n)}, \dots, x_D^{(n)}) \) under this model is
+    \begin{equation}
+        P(\mathbf{x}^{(n)} | M_1) = \prod_{d=1}^{D} (0.5)^{x_d^{(n)}} (0.5)^{1 - x_d^{(n)}} = (0.5)^D
+    \end{equation}
+    because \( (0.5)^{x_d^{(n)}} (0.5)^{1 - x_d^{(n)}} = 0.5 \) for each \( d \). Assuming independence across all \( N \) observations, the likelihood for the entire dataset is
+    \begin{equation}
+        P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | M_1) = (0.5)^{ND}
+    \end{equation}
+    
+    \noindent
+    ---
+    
+    \noindent In \textbf{Model (b)}, each element \( x_d^{(n)} \) in each binary vector \( \mathbf{x}^{(n)} \) is generated independently from a Bernoulli distribution with an unknown but identical parameter \( p \) for all dimensions. The likelihood of observing the entire dataset given \( p \) is
+    \begin{equation}
+        P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | p, M_2) = \prod_{n=1}^{N} \prod_{d=1}^{D} p^{x_d^{(n)}} (1 - p)^{1 - x_d^{(n)}}
+    \end{equation}
+    
+    \noindent Let \( \sum_{n=1}^N \sum_{d=1}^D x_d^{(n)} \) represent the total count of 1's across all elements, and let \( \sum_{n=1}^N \sum_{d=1}^D (1 - x_d^{(n)}) \) represent the total count of 0's. Then, we can rewrite the likelihood as
+    \begin{equation}
+        P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | p, M_2) = p^{\sum_{n=1}^N \sum_{d=1}^D x_d^{(n)}} (1 - p)^{\sum_{n=1}^N \sum_{d=1}^D (1 - x_d^{(n)})}
+    \end{equation}
+    
+    \noindent To account for the unknown \( p \), we integrate over all possible values of \( p \) with a uniform prior:
+    \begin{equation}
+        P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | M_2) = \int_0^1 p^{\sum_{n=1}^N \sum_{d=1}^D x_d^{(n)}} (1 - p)^{\sum_{n=1}^N \sum_{d=1}^D (1 - x_d^{(n)})} \, dp
+    \end{equation}
+    This integral is a Beta function \( B(\alpha, \beta) \) where
+    \begin{equation}
+        \alpha = 1 + \sum_{n=1}^N \sum_{d=1}^D x_d^{(n)}, \quad \beta = 1 + \sum_{n=1}^N \sum_{d=1}^D (1 - x_d^{(n)})
+    \end{equation}
+    Thus,
+    \begin{equation}
+        P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | M_2) = B(\alpha, \beta)
+    \end{equation}
+    
+    \noindent
+    ---
+    
+    \noindent In \textbf{Model (c)}, each dimension \( d \) has its own independent Bernoulli parameter \( p_d \), unknown and uniformly distributed over \( [0, 1] \). The likelihood for the entire dataset is
+    \begin{equation}
+        P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | \mathbf{p}, M_3) = \prod_{d=1}^{D} \prod_{n=1}^{N} p_d^{x_d^{(n)}} (1 - p_d)^{1 - x_d^{(n)}}
+    \end{equation}
+    
+    \noindent Let \( \sum_{n=1}^N x_d^{(n)} \) denote the count of 1's in dimension \( d \) across all \( N \) observations, and \( \sum_{n=1}^N (1 - x_d^{(n)}) \) denote the count of 0's. The likelihood simplifies to
+    \begin{equation}
+        P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | \mathbf{p}, M_3) = \prod_{d=1}^{D} p_d^{\sum_{n=1}^N x_d^{(n)}} (1 - p_d)^{\sum_{n=1}^N (1 - x_d^{(n)})}
+    \end{equation}
+    
+    \noindent To marginalize over each \( p_d \), integrate each with a uniform prior:
+    \begin{equation}
+        P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | M_3) = \prod_{d=1}^{D} \int_0^1 p_d^{\sum_{n=1}^N x_d^{(n)}} (1 - p_d)^{\sum_{n=1}^N (1 - x_d^{(n)})} \, dp_d
+    \end{equation}
+    Each integral is a Beta function \( B(\alpha_{d}, \beta_{d}) \) where
+    \begin{equation}
+        \alpha_{d} = 1 + \sum_{n=1}^N x_d^{(n)}, \quad \beta_{d} = 1 + \sum_{n=1}^N (1 - x_d^{(n)})
+    \end{equation}
+    Thus,
+    \begin{equation}
+        P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | M_3) = \prod_{d=1}^{D} B(\alpha_{d}, \beta_{d})
+    \end{equation}
+
+
+    \noindent
+    ---
+    \vspace{10pt}
+    
+    \noindent To determine which model best explains the binary data \( Y \), we calculate the posterior probability for each model given the observed data. Assuming equal prior probability for each model, the posterior for each model \( M_i \) is given by equation (21).
+    \vspace{10pt}
+    
+    \noindent We make this calculation numerically stable by computing log-likelihoods, normalizing with the `\texttt{logsumexp}` trick, and then exponentiating to get posterior probabilities.
+    
+    \noindent The log-likelihoods for each model are:
+
+    \begin{enumerate}
+        \item[(a)] fixed \( p_d = 0.5 \):
+      \begin{equation}
+          \log P(Y | M_a) = N D \log(0.5)
+      \end{equation}
+        \item[(b)] identical unknown \( p \) across dimensions:
+      \begin{equation}
+          \log P(Y | M_b) = \log \Gamma(\alpha) + \log \Gamma(\beta) - \log \Gamma(\alpha + \beta)
+      \end{equation}
+      where \( \alpha = 1 + \text{total count of 1's} \) and \( \beta = 1 + \text{total count of 0's} \).
+        \item[(c)] independent unknown \( p_d \) for each dimension:
+      \begin{equation}
+          \log P(Y | M_c) = \sum_{d=1}^D \left( \log \Gamma(\alpha_d) + \log \Gamma(\beta_d) - \log \Gamma(\alpha_d + \beta_d) \right)
+      \end{equation}
+      where \( \alpha_d = 1 + \text{count of 1's in dimension } d \) and \( \beta_d = 1 + \text{count of 0's in dimension } d \).
+    \end{enumerate}
+    
+    \noindent This approach enables stable calculation of posterior probabilities by utilising log transformations and the `\texttt{logsumexp}` trick to prevent underflow.
+
+    \vspace{-0.5em}
+    \begin{lstlisting}[language=Python, numbers=left, frame=single, breaklines=true]
+    import numpy as np
+    from scipy.special import gammaln, logsumexp
+    import matplotlib.pyplot as plt
+    
+    Y = np.loadtxt('binarydigits.txt')
+    
+    def model_a_log_likelihood(Y):
+        N, D = Y.shape
+        return N * D * np.log(0.5)
+    
+    def model_b_log_likelihood(Y):
+        N, D = Y.shape
+        total_ones = np.sum(Y)
+        total_zeros = N * D - total_ones
+        alpha = 1 + total_ones
+        beta = 1 + total_zeros
+        return gammaln(alpha) + gammaln(beta) - gammaln(alpha + beta)
+    
+    def model_c_log_likelihood(Y):
+        N, D = Y.shape
+        log_likelihood = 0.0
+        for d in range(D):
+            count_ones = np.sum(Y[:, d])
+            count_zeros = N - count_ones
+            alpha_d = 1 + count_ones
+            beta_d = 1 + count_zeros
+            log_likelihood += gammaln(alpha_d) + gammaln(beta_d) - gammaln(alpha_d + beta_d)
+        return log_likelihood
+    
+    def log_posterior(Y):
+        log_likelihoods = {
+            'Model A': model_a_log_likelihood(Y),
+            'Model B': model_b_log_likelihood(Y),
+            'Model C': model_c_log_likelihood(Y)
+        }
+        total_log_likelihood = logsumexp(list(log_likelihoods.values()))
+        log_posteriors = {model: ll - total_log_likelihood for model, ll in log_likelihoods.items()}
+        return log_posteriors
+    
+    # Calculate posterior probabilities based on log posteriors
+    log_posteriors = log_posterior(Y)
+    unscaled_posteriors = {model: np.exp(lp) for model, lp in log_posteriors.items()}
+    total_unscaled = sum(unscaled_posteriors.values())
+    posterior_probabilities = {model: unscaled / total_unscaled for model, unscaled in unscaled_posteriors.items()}
+    
+    for model, posterior in posterior_probabilities.items():
+        print(f"{model}: Posterior Probability = {posterior:.4e}")
+    \end{lstlisting}
+    \begin{lstlisting}[frame=single]
+    Model A: Posterior Probability = 9.14e-255
+    Model B: Posterior Probability = 1.43e-188
+    Model C: Posterior Probability = 1.00e+00
+    \end{lstlisting}
+
+
+\section{EM for Binary Data}
+
+Consider the data set of binary (black and white) images used in the previous question.
+
+\begin{enumerate}
+    \item[(a)] Write down the likelihood for a model consisting of a mixture of \( K \) multivariate Bernoulli distributions. Use the parameters \(\pi_1, \dots, \pi_K\) to denote the mixing proportions \((0 \leq \pi_k \leq 1; \sum_k \pi_k = 1)\) and arrange the \(K\) Bernoulli parameter vectors into a matrix \( P \) with elements \( p_{kd} \) denoting the probability that pixel \( d \) takes value 1 under mixture component \( k \). Assume the images are iid under the model, and that the pixels are independent of each other within each component distribution. [5 marks]
+
+    \vspace{10pt}
+    \noindent\textcolor{gray}{\rule{0.8\linewidth}{0.4pt}}
+
+    Just as we can for a mixture of Gaussians, we can formulate this mixture as a latent variable model, introducing a discrete hidden variable \( s^{(n)} \in \{1, \dots, K\} \) where \( P(s^{(n)} = k | \pi) = \pi_k \).
+
+    \item[(b)] Write down the expression for the responsibility of mixture component \( k \) for data vector \( \mathbf{x}^{(n)} \), i.e., \( r_{nk} \equiv P(s^{(n)} = k | \mathbf{x}^{(n)}, \pi, P) \). This computation provides the E-step for an EM algorithm. [5 marks]
+
+    \vspace{10pt}
+    \noindent\textcolor{gray}{\rule{0.8\linewidth}{0.4pt}}
+
+    \item[(c)] Find the maximizing parameters for the expected log-joint
+    \[
+    \arg\max_{\pi, P} \left\langle \sum_n \log P(\mathbf{x}^{(n)}, s^{(n)} | \pi, P) \right\rangle_{q(\{s^{(n)}\})}
+    \]
+    thus obtaining an iterative update for the parameters \(\pi\) and \(P\) in the M-step of EM. [10 marks]
+
+    \vspace{10pt}
+    \noindent\textcolor{gray}{\rule{0.8\linewidth}{0.4pt}}
+
+    \item[(d)] Implement the EM algorithm for a mixture of \( K \) multivariate Bernoullis. 
+
+    Your code should take as input the number \( K \), a matrix \( X \) containing the data set, and a maximum number of iterations to run. The algorithm should terminate after that number of iterations, or earlier if the log likelihood converges (does not increase by more than a very small amount). 
+   
+    Hand in clearly commented code.
+   
+    Run your algorithm on the data set for values of \( K \) in \{2, 3, 4, 7, 10\}. Plot the log likelihood as a function of the iteration number, and display the parameters found. [30 marks]
+
+    \vspace{10pt}
+    \noindent\textcolor{gray}{\rule{0.8\linewidth}{0.4pt}}
+
+    \item[(e)] Run the algorithm a few times starting from randomly chosen initial conditions. Do you obtain the same solutions (up to permutation)? Does this depend on \( K \)? Show the learned probability vectors as images.
+
+    Comment on how well the algorithm works, whether it finds good clusters (look at the cluster means and responsibilities and try to interpret them), and how you might improve the model. [10 marks]
+
+    \vspace{10pt}
+    \noindent\textcolor{gray}{\rule{0.8\linewidth}{0.4pt}}
+
+    \textbf{Hints:} Although the implementation may seem simple enough given the equations, there are many numerical pitfalls (that are common in much of probabilistic learning). A few suggestions:
+    
+    \begin{itemize}
+        \item Likelihoods can be very small; it is often better to work with log-likelihoods.
+        \item You may still encounter numerical issues computing responsibilities. Consider scaling the numerator and denominator of the equation by a suitable constant while still in the log domain.
+        \item It may also help to introduce (weak) priors on \( P \) and \( \pi \) and use EM to find the MAP estimates, rather than ML. State clearly whether you use this approach; if you do, specify the prior chosen, and report the log posterior instead of the log likelihood.
+    \end{itemize}
+\end{enumerate}
+
+
+
+
+
+\end{document}
