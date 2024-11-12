@@ -17,6 +17,7 @@
 \usepackage{amsfonts}
 \usepackage{bm}
 
+
 \title{Probabilistic and Unsupervised Learning}
 \author{Victor Fizesan}
 
@@ -253,7 +254,7 @@ Consider a data set of binary (black and white) images. Each image is arranged i
         \label{fig:enter-label}
     \end{figure}
 
-    When comparing Maximum Likelihood (ML) and Maximum A Posteriori (MAP) estimation, the key difference is that MAP incorporates prior information, while ML relies solely on the data. ML provides unbiased estimates with sufficient data but may overfit when data is limited, especially for binary cases with infrequent events. MAP estimation uses a prior, such as Beta$(\alpha,\beta)$, to regularize estimates, stabilizing results in sparse datasets by avoiding extreme values. As the dataset, $N$, grows, MAP should approach ML. We can see this in their derived equations: (9) and (19), where as N $\to \infty$, the prior Beta parameters become overshadowed. Practically, however, MAP depends on the quality of the prior – an appropriate prior enhances estimation, but a poor prior can introduce bias, especially with small datasets. In cases where no reliable prior exists, ML is safer; with good prior knowledge, MAP can improve results.
+    When comparing Maximum Likelihood (ML) and Maximum A Posteriori (MAP) estimation, the key difference is that MAP incorporates prior information, while ML relies solely on the data. ML provides unbiased estimates with sufficient data but may overfit when data is limited, especially for binary cases with infrequent events. MAP estimation uses a prior, such as Beta$(\alpha,\beta)$, to regularise estimates, stabilising results in sparse datasets by avoiding extreme values. As the dataset, $N$, grows, MAP should approach ML. We can see this in their derived equations: (9) and (19), where as N $\to \infty$, the prior Beta parameters become overshadowed. Practically, however, MAP depends on the quality of the prior – an appropriate prior enhances estimation, but a poor prior can introduce bias, especially with small datasets. In cases where no reliable prior exists, ML is safer; with good prior knowledge, MAP can improve results.
         
     \end{enumerate}
     
@@ -342,7 +343,7 @@ In the binary data model above, find the expressions needed to calculate the (re
         P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | \mathbf{p}, M_3) = \prod_{d=1}^{D} p_d^{\sum_{n=1}^N x_d^{(n)}} (1 - p_d)^{\sum_{n=1}^N (1 - x_d^{(n)})}
     \end{equation}
     
-    \noindent To marginalize over each \( p_d \), integrate each with a uniform prior:
+    \noindent To marginalise over each \( p_d \), integrate each with a uniform prior:
     \begin{equation}
         P(\mathbf{x}^{(1)}, \dots, \mathbf{x}^{(N)} | M_3) = \prod_{d=1}^{D} \int_0^1 p_d^{\sum_{n=1}^N x_d^{(n)}} (1 - p_d)^{\sum_{n=1}^N (1 - x_d^{(n)})} \, dp_d
     \end{equation}
@@ -448,26 +449,120 @@ In the binary data model above, find the expressions needed to calculate the (re
 Consider the data set of binary (black and white) images used in the previous question.
 
 \begin{enumerate}
+
     \item[(a)] Write down the likelihood for a model consisting of a mixture of \( K \) multivariate Bernoulli distributions. Use the parameters \(\pi_1, \dots, \pi_K\) to denote the mixing proportions \((0 \leq \pi_k \leq 1; \sum_k \pi_k = 1)\) and arrange the \(K\) Bernoulli parameter vectors into a matrix \( P \) with elements \( p_{kd} \) denoting the probability that pixel \( d \) takes value 1 under mixture component \( k \). Assume the images are iid under the model, and that the pixels are independent of each other within each component distribution. [5 marks]
 
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
     \vspace{10pt}
-    \noindent\textcolor{gray}{\rule{0.8\linewidth}{0.4pt}}
+
+    Let \( x^{(n)} = \{ x^{(n)}_d \}_{d=1}^D \) represent a binary image, where each \( x^{(n)}_d \in \{0, 1\} \).
+    \vspace{5pt}
+
+    The likelihood for a single image \( x^{(n)} \) is:
+    \begin{equation}
+    p(x^{(n)} | \pi, P) = \sum_{k=1}^K \pi_k \prod_{d=1}^D p_{kd}^{x^{(n)}_d} (1 - p_{kd})^{1 - x^{(n)}_d}
+    \end{equation}
+    Thus the total likelihood for the dataset \( \{ x^{(n)} \}_{n=1}^N \) is:
+    \begin{equation}
+    \boxed{\mathcal{L}(\pi, P) = P(x^{(1)}, \dots, x^{(N)} | \pi, P) = \prod_{n=1}^N \left( \sum_{k=1}^K \pi_k \prod_{d=1}^D p_{kd}^{x^{(n)}_d} (1 - p_{kd})^{1 - x^{(n)}_d} \right)}
+    \end{equation}
+
+    \vspace{10pt}
+
 
     Just as we can for a mixture of Gaussians, we can formulate this mixture as a latent variable model, introducing a discrete hidden variable \( s^{(n)} \in \{1, \dots, K\} \) where \( P(s^{(n)} = k | \pi) = \pi_k \).
 
     \item[(b)] Write down the expression for the responsibility of mixture component \( k \) for data vector \( \mathbf{x}^{(n)} \), i.e., \( r_{nk} \equiv P(s^{(n)} = k | \mathbf{x}^{(n)}, \pi, P) \). This computation provides the E-step for an EM algorithm. [5 marks]
 
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
     \vspace{10pt}
-    \noindent\textcolor{gray}{\rule{0.8\linewidth}{0.4pt}}
 
+    The responsibility \( r_{nk} \), representing the probability that mixture component \( k \) is responsible for observation \( x^{(n)} \), is given by:
+    
+    \begin{equation}
+    r_{nk} \equiv P(s^{(n)} = k | x^{(n)}, \pi, P) = \frac{\pi_k P(x^{(n)} | s^{(n)} = k, P)}{\sum_{j=1}^K \pi_j P(x^{(n)} | s^{(n)} = j, P)}
+    \end{equation}
+    
+    Expanding the terms, we get:
+    
+    \begin{equation}
+    \boxed{r_{nk} = \frac{\pi_k \prod_{d=1}^D p_{kd}^{x^{(n)}_d} (1 - p_{kd})^{1 - x^{(n)}_d}}{\sum_{j=1}^K \pi_j \prod_{d=1}^D p_{jd}^{x^{(n)}_d} (1 - p_{jd})^{1 - x^{(n)}_d}}}
+    \end{equation}
+    
+
+    \vspace{10pt}
+    
     \item[(c)] Find the maximizing parameters for the expected log-joint
-    \[
+    \begin{equation}
     \arg\max_{\pi, P} \left\langle \sum_n \log P(\mathbf{x}^{(n)}, s^{(n)} | \pi, P) \right\rangle_{q(\{s^{(n)}\})}
-    \]
+    \end{equation}
     thus obtaining an iterative update for the parameters \(\pi\) and \(P\) in the M-step of EM. [10 marks]
 
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
     \vspace{10pt}
-    \noindent\textcolor{gray}{\rule{0.8\linewidth}{0.4pt}}
+
+    From Equation (37), we can derive the log-likelihood of a single image \( x^{(n)} \) under a Bernoulli mixture model as:
+    
+    \begin{equation}
+    \log P(\mathbf{x}^{(n)}, s^{(n)} | \pi, P) = \log \pi_{s^{(n)}} + \sum_{d=1}^D \left( x_d^{(n)} \log p_{s^{(n)}d} + (1 - x_d^{(n)}) \log (1 - p_{s^{(n)}d}) \right)
+    \end{equation}
+    
+    We now declare the variational distribution, \( q(s^{(n)}) = P(s^{(n)} | \mathbf{x}^{(n)}, \pi, P) \), as the set of responsibilities \( r_{nk} \), denoted by Equation (40). This allows us to equate the expected log-joint as: 
+    
+    \begin{equation}
+    \sum_{n=1}^N \sum_{k=1}^K r_{nk} \left( \log \pi_k + \sum_{d=1}^D \left( x_d^{(n)} \log p_{kd} + (1 - x_d^{(n)}) \log (1 - p_{kd}) \right) \right)
+    \end{equation}
+
+    \vspace{5pt}
+    
+    We can now maximise this expectation by separately optimising with respect to each element in \( \pi \) and \( P \).
+    
+    \vspace{10pt}
+    
+    To maximise with respect to \( \pi_k \), we extract the differentiable terms from Equation (43), and introduce a Lagrange multiplier \( \lambda \) that ensures \( \sum_{k=1}^K \pi_k = 1 \):
+    
+    \begin{equation}
+    \mathcal{L} = \sum_{n=1}^N \sum_{k=1}^K r_{nk} \log \pi_k + \lambda \left( 1 - \sum_{k=1}^K \pi_k \right)
+    \end{equation}
+    
+    Taking the derivative with respect to \( \pi_k \) and setting it to zero, we obtain:
+    
+    \begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \pi_k} = \frac{\sum_{n=1}^N r_{nk}}{\pi_k} - \lambda = 0,
+    \end{equation}
+
+    where \( \lambda \) ensures the mixing coefficients sum to 1. Thus we find our first maximised parameter:
+
+    \begin{equation}
+    \boxed{\hat{\pi}_k = \frac{1}{N} \sum_{n=1}^N r_{nk}}
+    \end{equation}
+    
+    \vspace{5pt}
+    
+    To maximise with respect to \( p_{kd{}} \), we again separate the differentiable terms from the expected log-joint and set the derivative to zero: 
+    
+    \begin{equation}
+        \frac{\partial}{\partial p_{kd}} \sum_{n=1}^N r_{nk} \left( x_d^{(n)} \log p_{kd} + (1 - x_d^{(n)}) \log (1 - p_{kd}) \right) = 0
+    \end{equation}
+    
+    Expanding the derivative, we have:
+    
+    \begin{equation}
+        \sum_{n=1}^N r_{nk} \left( \frac{x_d^{(n)}}{p_{kd}} - \frac{1 - x_d^{(n)}}{1 - p_{kd}} \right) = 0
+    \end{equation}
+    
+    Multiplying through by \( p_{kd} (1 - p_{kd}) \) to clear the denominators:
+    
+    \begin{equation}
+        \sum_{n=1}^N r_{nk} x_d^{(n)} (1 - p_{kd}) = \sum_{n=1}^N r_{nk} (1 - x_d^{(n)}) p_{kd}
+    \end{equation}
+    
+    Cancelling out \(\sum_{n=1}^N r_{nk} x_d^{(n)} p_{kd}\) and solving for \( p_{kd} \), we obtain:
+    
+    \begin{equation}
+        \boxed{\hat{p}_{kd} = \frac{\sum_{n=1}^N r_{nk} x_d^{(n)}}{\sum_{n=1}^N r_{nk}}}
+    \end{equation}
+
 
     \item[(d)] Implement the EM algorithm for a mixture of \( K \) multivariate Bernoullis. 
 
@@ -477,27 +572,242 @@ Consider the data set of binary (black and white) images used in the previous qu
    
     Run your algorithm on the data set for values of \( K \) in \{2, 3, 4, 7, 10\}. Plot the log likelihood as a function of the iteration number, and display the parameters found. [30 marks]
 
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
     \vspace{10pt}
-    \noindent\textcolor{gray}{\rule{0.8\linewidth}{0.4pt}}
+
+    \begin{lstlisting}[language=Python, numbers=left, frame=single, breaklines=true, basicstyle=\small]
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from scipy.special import logsumexp
+    
+    Y = np.loadtxt('binarydigits.txt')
+    N, D = Y.shape
+    parameters = {}
+    
+    def init_params(K, D):
+        """
+        Initialise parameters for Bernoulli mixture model.
+        """
+        log_pi = np.log(np.random.dirichlet(np.ones(K), size=1)).flatten()  # Mixing proportions
+        log_p_matrix = np.log(np.random.uniform(low=0.1, high=0.9, size=(K, D)))  # Bernoulli probabilities
+        return log_pi, log_p_matrix
+    
+    def compute_log_component_likelihood(Y, log_p_matrix):
+        """
+        Compute log-likelihood of each pixel under each mixture component.
+        """
+        return Y @ log_p_matrix.T + (1 - Y) @ (np.log(1 - np.exp(log_p_matrix))).T 
+    
+    def e_step(Y, log_pi, log_p_matrix):
+        """
+        E-step: compute log responsibilities.
+        """
+        log_component_likelihood = compute_log_component_likelihood(Y, log_p_matrix)
+        log_r_nk = log_pi + log_component_likelihood  # Log responsibility numerator
+        log_r_nk -= logsumexp(log_r_nk, axis=1, keepdims=True)  # Normalise across components
+        return log_r_nk
+    
+    def m_step(Y, log_r_nk, alpha_prior, beta_prior):
+        """
+        M-step: update log mixing proportions and log Bernoulli parameters.
+        """
+        N_k = np.exp(logsumexp(log_r_nk, axis=0))
+        log_pi = np.log(N_k / len(Y))
+    
+        # Update log_p_matrix using MAP with a Beta prior
+        p_matrix_hat = (np.exp(log_r_nk).T @ Y + alpha_prior - 1) / (N_k[:, None] + alpha_prior + beta_prior - 2)
+        log_p_matrix = np.log(p_matrix_hat)
+        return log_pi, log_p_matrix
+    
+    def compute_log_posterior(Y, log_pi, log_p_matrix, alpha_prior, beta_prior):
+        """
+        Compute total log posterior for dataset, across components.
+        """
+        log_component_likelihood = compute_log_component_likelihood(Y, log_p_matrix)
+        log_likelihood = np.sum(logsumexp(log_pi + log_component_likelihood, axis=1))
+    
+        log_prior_pi = np.sum((alpha_prior - 1) * log_pi)
+        log_prior_p_matrix = np.sum(
+            (alpha_prior - 1) * log_p_matrix + (beta_prior - 1) * np.log(1 - np.exp(log_p_matrix)))
+    
+        return log_likelihood + log_prior_pi + log_prior_p_matrix
+    
+    def em_algorithm(Y, K, max_iter=100, tol=1e-6, alpha_prior=1.1, beta_prior=1.1):
+        """
+        Run EM algorithm with specified parameters.
+        """
+        log_pi, log_p_matrix = init_params(K, D)
+        log_posteriors = []
+    
+        for iteration in range(max_iter):
+            log_r_nk = e_step(Y, log_pi, log_p_matrix)
+            log_pi, log_p_matrix = m_step(Y, log_r_nk, alpha_prior, beta_prior)
+            log_posterior = compute_log_posterior(Y, log_pi, log_p_matrix, alpha_prior, beta_prior)
+            log_posteriors.append(log_posterior)
+    
+            if iteration > 0 and abs(log_posteriors[-1] - log_posteriors[-2]) < tol:
+                break
+    
+        return log_pi, log_p_matrix, log_posteriors
+    
+    def plot_log_posterior(log_posteriors, K):
+        """
+        Plot the log posterior as a function of iteration number.
+        """
+        plt.plot(log_posteriors, label=f'K={K}', color='black', linewidth=1.5)
+    
+    plt.figure(figsize=(10, 6))
+    
+    for K in [2, 3, 4, 7, 10]:
+        log_pi, log_p_matrix, log_posteriors = em_algorithm(Y, K)
+        plot_log_posterior(log_posteriors, K)
+        parameters[K] = (log_pi, log_p_matrix)
+        
+    plt.xlabel('Iteration', fontsize=14)
+    plt.ylabel('Log Posterior', fontsize=14)
+    plt.title('Log Posterior Convergence for Different K Values (Grayscale)', fontsize=16)
+    plt.tight_layout()
+    plt.show()
+    \end{lstlisting}
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=1\linewidth]{Screenshot 2024-11-12 at 19.47.27.png}
+        \caption{As the number of mixture components increases, the model tends to explain the data with a greater likelihood.}
+        \label{fig:enter-label}
+    \end{figure}
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=1\linewidth]{image.png}
+        \caption{EM optimised pixel intensities and mixing coefficients for various K.}
+        \label{fig:enter-label}
+    \end{figure}
+    
+    The methodology begins by initialising the mixing proportions ($\log \pi$) and the Bernoulli parameters ($\log p\_\text{matrix}$) for each component. We initialise $\log p\_\text{matrix}$ values between 0.1 and 0.9 to prevent extreme values. We also use a Dirichlet distribution on $\log \pi$ to ensure non-negative, summing-to-one proportions for valid mixing weights. The choice of log-space helps to mitigate numerical instability, which is critical as small likelihood values are common in high-dimensional data.
+
+    \vspace{0.8em}
+
+    For the M-step, we use a Beta prior on the Bernoulli parameters to compute maximum a posteriori (MAP) estimates rather than maximum likelihood (ML) estimates. This choice further stabilises the model by providing regularisation, particularly beneficial when the data is sparse or the model has many components. We chose a symmetric Beta prior with parameters slightly greater than $1.0$ to weakly guide the parameter updates. With greater parameter values on the Beta prior, we noticed a significant increase in “switched-off” components for high $K$ values. We interpret this as the prior over-regularising the model and the high $K$ count giving the model excessive flexibility to overfit the dataset.
+
+    \vspace{10pt}
+
 
     \item[(e)] Run the algorithm a few times starting from randomly chosen initial conditions. Do you obtain the same solutions (up to permutation)? Does this depend on \( K \)? Show the learned probability vectors as images.
 
     Comment on how well the algorithm works, whether it finds good clusters (look at the cluster means and responsibilities and try to interpret them), and how you might improve the model. [10 marks]
 
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
     \vspace{10pt}
-    \noindent\textcolor{gray}{\rule{0.8\linewidth}{0.4pt}}
 
-    \textbf{Hints:} Although the implementation may seem simple enough given the equations, there are many numerical pitfalls (that are common in much of probabilistic learning). A few suggestions:
+     For different values of $K$, we observed notable clustering patterns, as seen in Figure 5. We note that in the original dataset three distinct digits appear: $0$, $5$, and $7$. As such, we expect that drawing from three different latent distributions would effectively represent our data. Indeed, under $K=3$, we see three distinct digits. In contrast, higher values of $K$, such as $K=7$ and $K=10$, introduce redundancy, with multiple components capturing subtle variations of the same digit (e.g., different ways of writing $7$). This leads to some components having very low probabilities, indicating over-partitioning of similar patterns rather than capturing truly distinct clusters. While larger $K$ values allow for finer detail – as can be seen for $K=10$, where numbers are very granular – they risk overfitting by fitting minor variations rather than broader digit forms, underscoring the importance of balancing model complexity with data diversity.
+
+    \vspace{0.8em}
+
+    In Figure 6 we display the mean and inter-quartile log-likelihoods over 50 runs. We notice a well defined pattern where increasing K leads to higher log-likelihoods. We also notice that models with lower complexity tend to converge with fewer iterations. 
+
+    \vspace{0.8em}
+
+    To improve the model, we could apply selection criteria such as the Bayesian Information Criterion (BIC) or Akaike Information Criterion (AIC) to determine an optimal $K$ value that balances model complexity with data fit. Additionally, refining the initialisation step by using a soft clustering method or setting more informative priors could yield more distinct clusters without relying heavily on higher $K$ values to increase our model likelihood. Finally, enforcing a minimum probability threshold during updates could prevent clusters from becoming inactive, ensuring each component contributes meaningfully to the data representation.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{Screenshot 2024-11-12 at 18.10.18.png}
+        \caption{Inter-quartile ranges for 50 runs of the EM algorithm on different K.}
+        \label{fig:enter-label}
+    \end{figure}
+
+    \vspace{10pt}
+
+    \item[(f)] \textbf{[BONUS]} Express the log-likelihoods obtained in bits and relate these numbers to the length of the naive encoding of these binary data. How does your number compare to \texttt{gzip} (or another compression algorithm)? Why the difference? [5 marks]
+
+    \vspace{5pt}
+
+    To express the log-likelihoods obtained from the EM algorithm in bits, we convert each log-likelihood from natural log to bits (base 2) using:
     
-    \begin{itemize}
-        \item Likelihoods can be very small; it is often better to work with log-likelihoods.
-        \item You may still encounter numerical issues computing responsibilities. Consider scaling the numerator and denominator of the equation by a suitable constant while still in the log domain.
-        \item It may also help to introduce (weak) priors on \( P \) and \( \pi \) and use EM to find the MAP estimates, rather than ML. State clearly whether you use this approach; if you do, specify the prior chosen, and report the log posterior instead of the log likelihood.
-    \end{itemize}
+    \[
+    \text{Log-likelihood (bits)} = \frac{\ln(\text{likelihood})}{\ln(2)}
+    \]
+    
+    The naive encoding length for binary data, where each binary pixel is independently encoded, requires \( N \times D \) bits, assuming one bit per pixel. By comparing our log-likelihood (in bits) to this naive baseline, we assess the efficiency of our probabilistic model in terms of encoding length.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.25\linewidth]{Screenshot 2024-11-12 at 21.16.30.png}
+        \caption{Comparing compression of gzip against mixtures of K Bernoulli distributions}
+        \label{fig:enter-label}
+    \end{figure} 
+    
+    Figure 7 shows that the naive encoding achieves 6400 bits, while the EM algorithm achieves progressively lower encoding lengths as \( K \) increases, with a minimum of 3378 bits for \( K=10 \). Gzip compression is worse because it is limited to lossless compression, which restricts the achievable compression ratio, especially for high-dimensional or continuous data. 
+
+    \vspace{10pt}
+
+
+    \item[(g)] \textbf{[BONUS]}Consider the total cost of encoding both the model parameters and the data given the model. How does this total cost compare to gzip (or similar)? How does it depend on K? What might this tell you?
+    
+    
+    The total cost of encoding includes both the encoding length of the data given the model (the negative log-likelihood in bits) and the cost of encoding the model parameters (such as mixture weights and component parameters). As \( K \) increases, the data encoding length generally decreases, since the model better captures patterns in the data. However, the cost of encoding the model parameters increases with \( K \), as each additional component introduces parameters that need to be stored. This parameter overhead grows significantly with larger \( K \), potentially offsetting the benefits gained from a lower data encoding length.
+    \vspace{0.8em}
+    
+    Compared to gzip, which does not incur model parameter overhead, the total cost of a probabilistic model can become higher as \( K \) increases, especially when the data is not highly structured or repetitive. For smaller \( K \), the total encoding cost may still be lower than gzip due to a balance between model complexity and compression efficiency. 
+    \vspace{0.8em}
+    
+    This trade-off suggests that there is an optimal \( K \) where the balance between data compression and model overhead minimizes the total encoding cost. Beyond this point, additional components add more to the parameter overhead than they save in data encoding length, making the model less efficient for compression.    
+
 \end{enumerate}
 
+\section*{5. Decrypting Messages with MCMC}
 
+You are given a passage of English text that has been encrypted by remapping each symbol to a (usually) different one. For example,
 
+\[
+\begin{array}{ccc}
+a & \rightarrow & s \\
+b & \rightarrow & ! \\
+\text{(space)} & \rightarrow & v \\
+\vdots & & \vdots \\
+\end{array}
+\]
 
+\noindent Thus a text like ‘a boy…’ might be encrypted by ‘sv!op…’. Assume that the mapping between symbols is one-to-one. The file \texttt{symbols.txt} gives the list of symbols, one per line (the second line is (space)). The file \texttt{message.txt} gives the encrypted message.
+\vspace{0.5em}
+
+\noindent Decoding the message by brute force is impossible, since there are 53 symbols and thus \( 53! \) possible permutations to try. Instead we will set up a Markov chain Monte Carlo sampler to find modes in the space of permutations.
+\vspace{0.5em}
+
+\noindent We model English text, say \( s_1 s_2 \cdots s_n \) where \( s_i \) are symbols, as a Markov chain, so that each symbol is independent of the preceding text given only the symbol before:
+
+\[
+p(s_1 s_2 \cdots s_n) = p(s_1) \prod_{i=2}^{n} p(s_i | s_{i-1})
+\]
+
+\begin{enumerate}
+
+    \item[(a)] Learn the transition statistics of letters and punctuation in English: Download a large text [say the English translation of \textit{War and Peace}] and estimate the transition probabilities \( p(s_i = \alpha | s_{i-1} = \beta) \equiv \psi(\alpha, \beta) \), as well as the stationary distribution \( \lim_{i \to \infty} p(s_i = \gamma) \equiv \phi(\gamma) \). Assume that the first letter of your text (and also that of the encrypted text provided) is itself sampled from the stationary distribution.
+    
+    Give formulae for the ML estimates of these probabilities as functions of the counts of numbers of occurrences of symbols and pairs of symbols.
+    
+    Compute the estimated probabilities. Report the values as a table. [6 marks]
+
+    \item[(b)] The state variable for our MCMC sampler will be the symbol permutation. Let \( \sigma(s) \) be the symbol that stands for symbol \( s \) in the encrypted text, e.g., \( \sigma(a) = s \) and \( \sigma(b) = ! \) above.
+    
+    Assume a uniform prior distribution over permutations.
+    
+    Are the latent variables \( \sigma(s) \) for different symbols \( s \) independent? Let \( e_1 e_2 \cdots e_n \) be an encrypted English text. Write down the joint probability of \( e_1 e_2 \cdots e_n \) given \( \sigma \). [6 marks]
+
+    \item[(c)] We use a Metropolis-Hastings (MH) chain, with the proposal given by choosing two symbols \( s \) and \( s' \) at random and swapping the corresponding encrypted symbols \( \sigma(s) \) and \( \sigma(s') \).
+    
+    How does the proposal probability \( S(\sigma \rightarrow \sigma') \) depend on the permutations \( \sigma \) and \( \sigma' \)? What is the MH acceptance probability for a given proposal? [10 marks]
+
+    \item[(d)] Implement the MH sampler, and run it on the provided encrypted text. Report the current decryption of the first 60 symbols after every 100 iterations. Your Markov chain should converge to give you a fairly sensible message. (Hint: it may help to initialize your chain intelligently and to try multiple times; in any case, please describe what you did). [30 marks]
+
+    \item[(e)] Note that some \( \psi(\alpha, \beta) \) values may be zero. Does this affect the ergodicity of the chain? If the chain remains ergodic, give a proof; if not, explain and describe how you can restore ergodicity. [5 marks]
+
+    \item[(f)] Analyse this approach to decoding. For instance, would symbol probabilities alone (rather than transitions) be sufficient? If we used a second order Markov chain for English text, what problems might we encounter? Will it work if the encryption scheme allows two symbols to be mapped to the same encrypted value? Would it work for Chinese with \( > 10000 \) symbols? [13 marks]
+
+\end{enumerate}
+    
+    
 
 \end{document}
