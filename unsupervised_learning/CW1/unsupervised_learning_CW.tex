@@ -713,47 +713,12 @@ Consider the data set of binary (black and white) images used in the previous qu
 
     \begin{figure}[H]
         \centering
-        \includegraphics[width=1\linewidth]{Screenshot 2024-11-12 at 18.10.18.png}
+        \includegraphics[width=0.95\linewidth]{Screenshot 2024-11-12 at 18.10.18.png}
         \caption{Inter-quartile ranges for 50 runs of the EM algorithm on different K.}
         \label{fig:enter-label}
     \end{figure}
 
-    \vspace{10pt}
-
-    \item[(f)] \textbf{[BONUS]} Express the log-likelihoods obtained in bits and relate these numbers to the length of the naive encoding of these binary data. How does your number compare to \texttt{gzip} (or another compression algorithm)? Why the difference? [5 marks]
-
-    \vspace{5pt}
-
-    To express the log-likelihoods obtained from the EM algorithm in bits, we convert each log-likelihood from natural log to bits (base 2) using:
-    
-    \[
-    \text{Log-likelihood (bits)} = \frac{\ln(\text{likelihood})}{\ln(2)}
-    \]
-    
-    The naive encoding length for binary data, where each binary pixel is independently encoded, requires \( N \times D \) bits, assuming one bit per pixel. By comparing our log-likelihood (in bits) to this naive baseline, we assess the efficiency of our probabilistic model in terms of encoding length.
-
-    \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.25\linewidth]{Screenshot 2024-11-12 at 21.16.30.png}
-        \caption{Comparing compression of gzip against mixtures of K Bernoulli distributions}
-        \label{fig:enter-label}
-    \end{figure} 
-    
-    Figure 7 shows that the naive encoding achieves 6400 bits, while the EM algorithm achieves progressively lower encoding lengths as \( K \) increases, with a minimum of 3378 bits for \( K=10 \). Gzip compression is worse because it is limited to lossless compression, which restricts the achievable compression ratio, especially for high-dimensional or continuous data. 
-
-    \vspace{10pt}
-
-
-    \item[(g)] \textbf{[BONUS]}Consider the total cost of encoding both the model parameters and the data given the model. How does this total cost compare to gzip (or similar)? How does it depend on K? What might this tell you?
-    
-    
-    The total cost of encoding includes both the encoding length of the data given the model (the negative log-likelihood in bits) and the cost of encoding the model parameters (such as mixture weights and component parameters). As \( K \) increases, the data encoding length generally decreases, since the model better captures patterns in the data. However, the cost of encoding the model parameters increases with \( K \), as each additional component introduces parameters that need to be stored. This parameter overhead grows significantly with larger \( K \), potentially offsetting the benefits gained from a lower data encoding length.
-    \vspace{0.8em}
-    
-    Compared to gzip, which does not incur model parameter overhead, the total cost of a probabilistic model can become higher as \( K \) increases, especially when the data is not highly structured or repetitive. For smaller \( K \), the total encoding cost may still be lower than gzip due to a balance between model complexity and compression efficiency. 
-    \vspace{0.8em}
-    
-    This trade-off suggests that there is an optimal \( K \) where the balance between data compression and model overhead minimizes the total encoding cost. Beyond this point, additional components add more to the parameter overhead than they save in data encoding length, making the model less efficient for compression.    
+    \vspace{10pt
 
 \end{enumerate}
 
@@ -789,23 +754,456 @@ p(s_1 s_2 \cdots s_n) = p(s_1) \prod_{i=2}^{n} p(s_i | s_{i-1})
     Give formulae for the ML estimates of these probabilities as functions of the counts of numbers of occurrences of symbols and pairs of symbols.
     
     Compute the estimated probabilities. Report the values as a table. [6 marks]
+    
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+    \vspace{10pt}
+    
+    The Maximum Likelihood Estimate (MLE) for the transition probability \( \psi(\alpha, \beta) \) is given by
+    
+    \begin{equation}
+    \psi^{\text{ML}}(\alpha, \beta) = \frac{N(\alpha, \beta)}{N_\beta}
+    \end{equation}
+    
+    where \( N_\beta = \sum_{\alpha} N(\alpha, \beta) \) is the total count of occurrences of \( \beta \) as a preceding symbol. To ensure ergodicity and avoid zero probabilities, we add a smoothing factor of 1 to each \( N(\alpha, \beta) \), updating \( N_\beta \) accordingly by adding the number of unique symbols.
 
+    \vspace{0.8em}
+    
+    The stationary distribution \( \varphi(\gamma) \), representing the long-term probability of each symbol \( \gamma \), is calculated as
+    
+    \begin{equation}
+    \varphi(\gamma) = \frac{N(\gamma)}{\sum_{\gamma'} N(\gamma')}
+    \end{equation}
+
+    \vspace{0.8em}
+
+    
+    We approximate \( \varphi(\gamma) \) through the power method to find the steady-state vector of the transition matrix \( \Psi \), where \( \Psi_{i,j} = p(s^j | s^i) \) and \( s^i \) is the \( i \)-th symbol.
+
+    \vspace{0.8em}
+    
+    The estimated values for \( \psi(\alpha, \beta) \) and \( \varphi(\gamma) \) are presented below.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{Screenshot 2024-11-13 at 00.37.48.png}
+        \caption{Heatmap of bigram transition probabilities under the War and Peace distribution.}
+        \label{fig:enter-label}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{Screenshot 2024-11-13 at 00.31.12.png}
+        \caption{Heatmap of stationary distribution probabilities for each symbol.}
+        \label{fig:enter-label}
+    \end{figure}
+
+    \vspace{10pt}
+    
     \item[(b)] The state variable for our MCMC sampler will be the symbol permutation. Let \( \sigma(s) \) be the symbol that stands for symbol \( s \) in the encrypted text, e.g., \( \sigma(a) = s \) and \( \sigma(b) = ! \) above.
     
     Assume a uniform prior distribution over permutations.
     
     Are the latent variables \( \sigma(s) \) for different symbols \( s \) independent? Let \( e_1 e_2 \cdots e_n \) be an encrypted English text. Write down the joint probability of \( e_1 e_2 \cdots e_n \) given \( \sigma \). [6 marks]
 
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+    \vspace{10pt}
+
+    The latent variables for different symbols \( s \) exhibit interdependence due to the one-to-one mapping of the permutation \( \sigma \). Once a symbol in the plaintext is assigned a particular encoding, other symbols are restricted from being mapped to the same encoding.
+    \vspace{0.8em}
+    
+    Assuming a first-order Markov chain for the original text, the same transition matrix applies to the encrypted text, allowing us to compute the joint probability of observing the sequence \( e_1, e_2, \ldots, e_n \) in the encrypted text under a specific permutation \( \sigma \). This joint probability is given by
+    
+    \begin{equation}
+    \boxed{p(e_1, e_2, \ldots, e_n \mid \sigma) = \prod_{i=1}^{n} p(e_i \mid e_{i-1}, \sigma) = \prod_{i=1}^{n} \psi(\sigma^{-1}(e_i), \sigma^{-1}(e_{i-1}))}
+    \end{equation}
+    
+    where \( e_i \) denotes the \( i \)-th symbol in the encrypted sequence, \( e_{i-1} \) is the preceding symbol, and \( \psi(\sigma^{-1}(e_i), \sigma^{-1}(e_{i-1})) \) represents the transition probability from \( e_{i-1} \) to \( e_i \) based on the established mapping \( \sigma \). Here, \( \sigma^{-1} \) reverses the mapping to yield the decrypted original symbols.
+    \vspace{0.5em}
+
     \item[(c)] We use a Metropolis-Hastings (MH) chain, with the proposal given by choosing two symbols \( s \) and \( s' \) at random and swapping the corresponding encrypted symbols \( \sigma(s) \) and \( \sigma(s') \).
     
     How does the proposal probability \( S(\sigma \rightarrow \sigma') \) depend on the permutations \( \sigma \) and \( \sigma' \)? What is the MH acceptance probability for a given proposal? [10 marks]
 
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+    \vspace{10pt}
+
+    We implement a Metropolis-Hastings (MH) chain for decoding, where each proposal swaps two randomly chosen symbols \( s \) and \( s' \), modifying the encrypted mapping \( \sigma(s) \) and \( \sigma(s') \).
+    
+    \begin{equation}
+    S(\sigma \rightarrow \sigma') = \frac{1}{\binom{53}{2}} = \frac{2}{53 \times 52}
+    \end{equation}
+    
+    For the MH acceptance probability \( A(\sigma \rightarrow \sigma') \), given the symmetric proposal, we have
+    
+    \begin{equation}
+    A(\sigma \rightarrow \sigma') = \min \left( 1, \frac{\pi(\sigma')}{\pi(\sigma)} \right)
+    \end{equation}
+    
+    Using Bayes’ Theorem, we express the posterior \( \pi(\sigma) = P(\sigma \mid \mathcal{D}) \) as
+    
+    \begin{equation}
+    P(\sigma \mid \mathcal{D}) = \frac{P(\mathcal{D} \mid \sigma) P(\sigma)}{\sum_{\sigma'} P(\mathcal{D} \mid \sigma') P(\sigma')}
+    \end{equation}
+    
+    Assuming a uniform prior \( P(\sigma) \), we treat \( P(\sigma) \) as a constant, which allows us to simplify the acceptance probability further:
+    
+    \begin{equation}
+    A(\sigma \rightarrow \sigma') = \min \left( 1, \frac{P(\mathcal{D} \mid \sigma')}{P(\mathcal{D} \mid \sigma)} \right)
+    \end{equation}
+    
+    The target distribution \( \pi(\sigma) \) for the encrypted sequence \( e_1, e_2, \ldots, e_n \) under a permutation \( \sigma \) is
+    
+    \begin{equation}
+    \pi(\sigma) = p(e_1, e_2, \ldots, e_n \mid \sigma) = P(\sigma^{-1}(e_1)) \prod_{i=2}^{n} \psi(\sigma^{-1}(e_i), \sigma^{-1}(e_{i-1}))
+    \end{equation}
+    
+    Thus, the acceptance probability becomes
+    
+    \begin{equation}
+    \boxed{A(\sigma \rightarrow \sigma') = \min \left( 1, \frac{P((\sigma')^{-1}(e_1)) \prod_{i=2}^{n} \psi((\sigma')^{-1}(e_i), (\sigma')^{-1}(e_{i-1}))}{P(\sigma^{-1}(e_1)) \prod_{i=2}^{n} \psi(\sigma^{-1}(e_i), \sigma^{-1}(e_{i-1}))} \right)}
+    \end{equation}
+    
+    This approach favours permutations that maximise the likelihood of observed transitions.
+
+
+
+
+
     \item[(d)] Implement the MH sampler, and run it on the provided encrypted text. Report the current decryption of the first 60 symbols after every 100 iterations. Your Markov chain should converge to give you a fairly sensible message. (Hint: it may help to initialize your chain intelligently and to try multiple times; in any case, please describe what you did). [30 marks]
 
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+    \vspace{10pt}
+
+    \begin{lstlisting}[language=Python, numbers=left, frame=single, breaklines=true, basicstyle=\small]
+
+    import numpy as np
+    import random
+    from collections import Counter
+    
+    class Decoder:
+        def __init__(self, symbol_file, message_file, training_file):
+            # Initialise data and preprocess text
+            self.symbol_list = self.load_symbols(symbol_file)
+            self.symbol_index, self.index_symbol = self.create_symbol_mappings()
+            self.num_symbols = len(self.symbol_list)
+            self.encrypted_msg = self.load_file_as_list(message_file)
+            self.training_text = self.load_file_as_list(training_file)
+            self.processed_training_text = self.preprocess(self.training_text)
+            
+            # Initialise symbol counts and pair counts
+            self.symbol_counts = np.zeros(self.num_symbols, dtype=int)
+            self.pair_counts = np.zeros((self.num_symbols, self.num_symbols), dtype=int)
+            self.calculate_symbol_and_pair_counts()
+            
+            # Calculate stationary and transition probabilities
+            self.stationary_dist, self.transitions = self.calculate_probabilities()
+            self.log_stationary = np.log(self.stationary_dist + 1e-10)
+            self.log_transitions = np.log(self.transitions + 1e-10)
+            
+            # Prepare encrypted message indices and initialise permutation
+            self.encrypted_indices = [self.symbol_index[ch] for ch in self.encrypted_msg if ch in self.symbol_index]
+            self.perm, self.perm_inverse = self.intelligent_initialisation()
+            self.current_log_likelihood = self.calculate_log_likelihood([self.perm_inverse[idx] for idx in self.encrypted_indices])
+    
+        @staticmethod
+        def load_symbols(file_path):
+            # Load symbols from file
+            with open(file_path) as f:
+                return [line.strip() if line.strip() else ' ' for line in f]
+        
+        @staticmethod
+        def load_file_as_list(file_path):
+            # Load file as character list
+            with open(file_path) as f:
+                return [char for line in f for char in line]
+    
+        def create_symbol_mappings(self):
+            # Create mappings between symbols and indices
+            symbol_index = {s: i for i, s in enumerate(self.symbol_list)}
+            index_symbol = {i: s for i, s in enumerate(self.symbol_list)}
+            return symbol_index, index_symbol
+    
+        def preprocess(self, text):
+            allowed = set(self.symbol_list)
+            return ''.join([ch.lower() if ch in allowed else '' for ch in text]).replace('’', "'").replace('“', '"').replace('”', '"').replace('—', '-').replace('\n', ' ')
+    
+        def calculate_symbol_and_pair_counts(self):
+            # Count individual symbols and symbol pairs
+            prev_idx = None
+            for ch in self.processed_training_text:
+                if ch in self.symbol_index:
+                    curr_idx = self.symbol_index[ch]
+                    self.symbol_counts[curr_idx] += 1
+                    if prev_idx is not None:
+                        self.pair_counts[prev_idx, curr_idx] += 1
+                    prev_idx = curr_idx
+    
+        def calculate_probabilities(self):
+            # Compute stationary distribution and transition matrix
+            total_count = self.symbol_counts.sum()
+            stationary_dist = self.symbol_counts / total_count
+            non_zero_symbol_counts = np.where(self.symbol_counts == 0, 1, self.symbol_counts)
+            transitions = self.pair_counts / non_zero_symbol_counts[:, None]
+            return stationary_dist, np.nan_to_num(transitions)
+    
+        def intelligent_initialisation(self):
+            # Initialise permutation using stationary distribution
+            top_symbols = np.argsort(self.stationary_dist)[-4:][::-1]
+            encrypted_freq = Counter(self.encrypted_msg).most_common(4)
+            initial_map = {self.symbol_index[enc_sym]: top_symbols[i] 
+                           for i, (enc_sym, _) in enumerate(encrypted_freq)}
+            
+            # Randomly assign remaining symbols
+            available_symbols = [i for i in range(self.num_symbols) if i not in initial_map]
+            remaining_indices = [i for i in range(self.num_symbols) if i not in initial_map.values()]
+            random.shuffle(remaining_indices)
+            for idx, sym in zip(available_symbols, remaining_indices):
+                initial_map[idx] = sym
+    
+            # Convert to permutation arrays
+            perm = np.array([initial_map[i] for i in range(self.num_symbols)])
+            perm_inverse = np.zeros(self.num_symbols, dtype=int)
+            perm_inverse[perm] = np.arange(self.num_symbols)
+            return perm, perm_inverse
+    
+        def calculate_log_likelihood(self, decoded_indices):
+            # Calculate log likelihood of decoded message
+            log_likelihood = self.log_stationary[decoded_indices[0]]
+            for i in range(1, len(decoded_indices)):
+                prev_idx, curr_idx = decoded_indices[i - 1], decoded_indices[i]
+                log_likelihood += self.log_transitions[prev_idx, curr_idx]
+            return log_likelihood
+    
+        def metropolis_hastings(self, iterations=10000):
+            # Perform Metropolis-Hastings sampling to optimise permutation
+            accepted_moves = 0
+            decoded_message = [self.perm_inverse[idx] for idx in self.encrypted_indices]
+    
+            for iter_num in range(1, iterations + 1):
+                # Propose new permutation by swapping two symbols
+                a, b = random.sample(range(self.num_symbols), 2)
+                new_perm = self.perm.copy()
+                new_perm[a], new_perm[b] = new_perm[b], new_perm[a]
+    
+                # Calculate new log likelihood
+                new_perm_inverse = np.zeros(self.num_symbols, dtype=int)
+                new_perm_inverse[new_perm] = np.arange(self.num_symbols)
+                new_decoded_message = [new_perm_inverse[idx] for idx in self.encrypted_indices]
+                new_log_likelihood = self.calculate_log_likelihood(new_decoded_message)
+                log_likelihood_diff = new_log_likelihood - self.current_log_likelihood
+                acceptance_prob = min(1, np.exp(log_likelihood_diff))
+    
+                # Accept or reject proposal
+                if random.random() < acceptance_prob:
+                    self.perm, self.perm_inverse = new_perm, new_perm_inverse
+                    decoded_message = new_decoded_message
+                    self.current_log_likelihood = new_log_likelihood
+                    accepted_moves += 1
+    
+                # Report progress every 100 iterations
+                if iter_num % 100 == 0:
+                    partial_decoded_text = ''.join(self.index_symbol[idx] for idx in decoded_message[:60])
+                    acceptance_rate = accepted_moves / iter_num
+                    print(f"Iteration {iter_num}: {partial_decoded_text}")
+                    print(f"Acceptance Rate: {acceptance_rate:.4f}")
+    
+            return {self.index_symbol[self.perm[i]]: self.symbol_list[i] for i in range(self.num_symbols)}
+    
+    decoder = Decoder("symbols.txt", "message.txt", "war_and_peace.txt")
+    final_map = decoder.metropolis_hastings()
+
+    \end{lstlisting}
+
+    \vspace{1em}
+
+    To initialise the chain intelligently, we analysed symbol frequencies by estimating the stationary distribution \( \psi(\alpha, \beta) \) from the training text. The most common were found to be: \texttt{\{ \text{space}: 0.169, \text{e}: 0.102, \text{t}: 0.072, \text{a}: 0.064, \text{o}: 0.062, \text{n}: 0.059, \dots \}}. We found that only using the four most common symbols and randomly initialising the rest was most effective. This is probably because excessively using the stationary distribution can trap the MCMC in a local minimum. 
+
+    \vspace{1em}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\linewidth]{chart.png}
+        \caption{The log likelihood of the decrypted message across iterations converges.}
+        \label{fig:enter-label}
+    \end{figure}
+
+    
+
+    
     \item[(e)] Note that some \( \psi(\alpha, \beta) \) values may be zero. Does this affect the ergodicity of the chain? If the chain remains ergodic, give a proof; if not, explain and describe how you can restore ergodicity. [5 marks]
 
-    \item[(f)] Analyse this approach to decoding. For instance, would symbol probabilities alone (rather than transitions) be sufficient? If we used a second order Markov chain for English text, what problems might we encounter? Will it work if the encryption scheme allows two symbols to be mapped to the same encrypted value? Would it work for Chinese with \( > 10000 \) symbols? [13 marks]
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+    \vspace{10pt}
 
+    Since some \( \psi(\alpha, \beta) \) values are zero, the chain is not ergodic, as ergodicity requires irreducibility – each state must be reachable from every other state. Zero transition probabilities \( \psi(\alpha, \beta) = 0 \) prevent certain transitions.
+
+     \vspace{0.8em}
+        
+    To restore ergodicity, we apply smoothing by adding a small constant \( \epsilon \) to each count:
+    
+    \begin{equation}
+    \hat{\psi}(\alpha, \beta) = \frac{N(\alpha, \beta) + \epsilon}{N_\beta + \epsilon \cdot |\mathcal{S}|}
+    \end{equation}
+    
+    where \( |\mathcal{S}| \) is the symbol count, and \( \epsilon > 0 \) is small (e.g., 1). Smoothing ensures each \( \hat{\psi}(\alpha, \beta) \) is positive, making the chain irreducible and therefore ergodic.
+
+    \vspace{10pt}
+
+    \item[(f)] Analyse this approach to decoding. For instance, would symbol probabilities alone (rather than transitions) be sufficient? If we used a second order Markov chain for English text, what problems might we encounter? Will it work if the encryption scheme allows two symbols to be mapped to the same encrypted value? Would it work for Chinese with \( > 10000 \) symbols? [13 marks]
+    
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+    \vspace{10pt}
+
+    Symbol probabilities alone are inadequate for decryption. While they capture frequency distributions, they do not account for syntactic structures, leading to outputs that lack coherence. For instance, it will not have any knowledge of the distribution of vowel-consonant pairing, which is very important. Without transition probabilities, different symbol arrangements with identical frequencies are treated as equally likely, reducing the chances of finding the true sentence structure.
+    \vspace{0.8em}
+    
+    A second-order Markov chain would improve accuracy by considering pairs of preceding symbols. n-gram models do exactly this – they are n-order Markov chains – but they experience significant computational challenges. Their complexity scales with \(O\left( \mathcal{V}^n \right)\), where  \(\mathcal{V}\) is the vocabulary size and \(n\) is the n-gram order. In the case of \(n=2\), the transition matrix becomes three-dimensional, which increases the storage and processing requirements. 
+    \vspace{0.8em}
+    
+    The method also assumes a bijective encryption scheme. If two symbols map to the same encrypted value, the decryption process fails because the one-to-one mapping required for the permutation structure is violated. This causes ambiguity in the likelihood function, disrupting the Metropolis-Hastings sampler’s ability to converge.
+    \vspace{0.8em} 
+    
+    In languages like Chinese, which have large symbol sets, the model faces scalability issues. A transition matrix for thousands of symbols would be sparse, leading to low or zero transition probabilities and making it difficult for the MCMC sampler to explore the state space effectively.
+
+    \vspace{10pt}
+
+
+\end{enumerate}
+
+\section*{8. Eigenvalues as solutions of an optimization problem}
+
+Let \( A \) be a symmetric \( n \times n \)-matrix, and define
+
+\[
+q_A(x) := x^\top A x \quad \text{and} \quad R_A(x) := \frac{x^\top A x}{x^\top x} = \frac{q_A(x)}{\|x\|^2} \quad \text{for } x \in \mathbb{R}^n.
+\]
+
+\noindent We have already encountered the quadratic form \( q_A \) in class. The purpose of this problem is to verify the following fact:
+\vspace{1em}
+
+\noindent If \( A \) is a symmetric \( n \times n \)-matrix, the optimization problem
+
+\[
+x^* := \arg \max_{x \in \mathbb{R}^n} R_A(x)
+\]
+
+\noindent  has a solution, \( R_A(x^*) \) is the largest eigenvalue of \( A \), and \( x^* \) is a corresponding eigenvector.
+\vspace{1em}
+
+\noindent This result is very useful in machine learning, where we are often interested in the largest eigenvalue specifically—it allows us to compute the largest eigenvalue without computing the entire spectrum, and it replaces an algebraic characterization (the eigenvalue equation) by an optimization problem. We will assume as known that the function \( q_A \) is continuous.
+\vspace{0.5em}
+
+
+\begin{enumerate}
+    \item[(a)] Use the extreme value theorem of calculus (recall: a continuous function on a compact domain attains its maximum and minimum) to show that \( \sup_{x \in \mathbb{R}^n} R_A(x) \) is attained. \textbf{Hint:} Since \( \mathbb{R}^n \) is not compact, transform the supremum over \( \mathbb{R}^n \) into an equivalent supremum over the unit sphere \( S = \{ x \in \mathbb{R}^n \mid \|x\| = 1 \} \). The set \( S \) is compact (which you can assume as known). [6 marks]
+
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+    \vspace{10pt}
+
+    We seek to show that the supremum of \( R_A(x) \) is attained, where:
+
+    \begin{equation}
+    R_A(x) = \frac{x^\top A x}{\|x\|^2}.
+    \end{equation}
+    
+    Since \( R_A(x) \) is homogeneous of degree zero, we can restrict the domain to the unit sphere \( S = \{ x \in \mathbb{R}^n : \|x\| = 1 \} \), as the supremum over \( \mathbb{R}^n \) is equivalent to the supremum over \( S \).
+    
+    On the unit sphere, \( x^\top x = 1 \), so:
+    
+    \begin{equation}
+    R_A(x) = x^\top A x.
+    \end{equation}
+    
+    The unit sphere \( S \) is compact, and since \( R_A(x) \) is continuous, the extreme value theorem guarantees that \( R_A(x) \) attains its maximum on \( S \). Therefore:
+    
+    \begin{equation}
+    \sup_{x \in \mathbb{R}^n} R_A(x) = \sup_{x \in S} R_A(x),
+    \end{equation}
+    
+    and the supremum is attained at some \( x^* \in S \), completing the proof.
+    
+
+    \item[(b)] Let \( \lambda_1 \geq \dots \geq \lambda_n \) be the eigenvalues of \( A \) enumerated by decreasing size, and \( \xi_1, \dots, \xi_n \) corresponding eigenvectors that form an ONB. Recall from class that we can represent any vector \( x \in \mathbb{R}^n \) as
+
+    \[
+    x = \sum_{i=1}^n (\xi_i^\top x) \xi_i .
+    \]
+
+    Show that \( R_A(x) \leq \lambda_1 \). 
+    \vspace{0.5em}
+
+    \noindent Since clearly \( R_A(\xi_1) = \lambda_1 \), we have in fact shown the existence of the maximum twice, using two different arguments! In summary, we now know the maximum exists, and that \( \xi_1 \) attains it. What we shall have to show is that any vector in \( S \) that is not an eigenvector for \( \lambda_1 \) does not maximize \( R_A \). [9 marks]
+       
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+    \vspace{10pt}
+    
+    Let \( \lambda_1 \geq \lambda_2 \geq \dots \geq \lambda_n \) be the eigenvalues of \( A \), with corresponding eigenvectors \( \xi_1, \dots, \xi_n \). Any vector \( x \in \mathbb{R}^n \) can be expressed as:
+
+    \begin{equation}
+    x = \sum_{i=1}^n (\xi_i^\top x) \xi_i.
+    \end{equation}
+    
+    We aim to show that \( R_A(x) \leq \lambda_1 \). Using this expansion of \( x \), we have:
+    
+    \begin{equation}
+    R_A(x) = \frac{x^\top A x}{x^\top x} = \frac{\sum_{i=1}^n \lambda_i (\xi_i^\top x)^2}{\sum_{i=1}^n (\xi_i^\top x)^2}.
+    \end{equation}
+    
+    Since \( \lambda_1 \geq \lambda_2 \geq \dots \geq \lambda_n \), it follows that:
+    
+    \begin{equation}
+    R_A(x) \leq \lambda_1.
+    \end{equation}
+    
+    In particular, when \( x = \xi_1 \), we have \( R_A(\xi_1) = \lambda_1 \). Thus, the maximum value of \( R_A(x) \) is attained at \( x = \xi_1 \).
+    
+    \noindent If \( x \) is not an eigenvector for \( \lambda_1 \), then \( x \) contains components along \( \xi_2, \dots, \xi_n \). Since \( \lambda_2 < \lambda_1 \), these components lead to:
+    
+    \begin{equation}
+    R_A(x) < \lambda_1.
+    \end{equation}
+    
+    Thus, the maximum is attained only at \( \xi_1 \), the eigenvector corresponding to \( \lambda_1 \).
+
+    \vspace{1.5em}
+    
+    \noindent To show that any vector in \( S \) that is not an eigenvector corresponding to \( \lambda_1 \) does not maximize \( R_A(x) \), let \( x \in S \) be a unit vector not aligned with \( \xi_1 \). Then, the expansion of \( x \) as:
+
+    \[
+    x = \sum_{i=1}^n (\xi_i^\top x) \xi_i
+    \]
+
+    will include contributions from eigenvectors \( \xi_2, \dots, \xi_n \), corresponding to eigenvalues \( \lambda_2, \dots, \lambda_n \). Since \( \lambda_2 < \lambda_1 \), these non-zero components will result in a strictly smaller value for \( R_A(x) \) compared to \( \lambda_1 \), hence \( R_A(x) < \lambda_1 \). This confirms that the maximum is attained only at \( \xi_1 \), which corresponds to the largest eigenvalue \( \lambda_1 \).
+
+    \vspace{0.8em}
+
+
+    \item[(c)] Recall that there may be several linearly independent eigenvectors that all have eigenvalue \( \lambda_1 \). Let these be \( \{\xi_1, \dots, \xi_k\} \), for some \( k \leq n \). Show that, if \( x \in \mathbb{R}^n \) is not contained in \text{span}\{$\xi_1, \dots, \xi_k$\}, then \( R_A(x) < \lambda_1 \). [5 marks]
+
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.4pt}}
+    \vspace{10pt}
+
+    
+    Suppose \( x \) is not in the span of \( \{\xi_1, \dots, \xi_k\} \). Then, we can decompose \( x \) as:
+    
+    \begin{equation}
+    x = \sum_{i=1}^k (\xi_i^\top x) \xi_i + \sum_{i=k+1}^n (\xi_i^\top x) \xi_i,
+    \end{equation}
+    
+    where \( \sum_{i=1}^k (\xi_i^\top x) \xi_i \) lies in the span of \( \xi_1, \dots, \xi_k \) and the second sum corresponds to the components of \( x \) orthogonal to this span.
+    
+    Now, using this decomposition in the definition of \( R_A(x) \), we get:
+    
+    \begin{equation}
+    R_A(x) = \frac{\sum_{i=1}^n \lambda_i (\xi_i^\top x)^2}{\sum_{i=1}^n (\xi_i^\top x)^2}.
+    \end{equation}
+    
+    Since \( \lambda_1 > \lambda_2 \geq \dots \geq \lambda_k \) and \( \lambda_{k+1}, \dots, \lambda_n < \lambda_1 \), the terms for \( \xi_{k+1}, \dots, \xi_n \) contribute less than the terms for \( \xi_1, \dots, \xi_k \). Therefore, we have:
+    
+    \[
+    R_A(x) < \lambda_1.
+    \]
+    
 \end{enumerate}
     
     
