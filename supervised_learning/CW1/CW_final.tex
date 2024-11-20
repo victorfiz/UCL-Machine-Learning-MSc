@@ -2,6 +2,42 @@
 \usepackage{graphicx} % Required for inserting images
 \usepackage[margin=1in]{geometry} % Adjusts all margins to 1 inch
 \usepackage{parskip}
+\usepackage{amsmath, amssymb}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage[%  
+    colorlinks=true,
+    pdfborder={0 0 0},
+    linkcolor=red
+]{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
 
 
 \title{Supervised Learning}
@@ -11,7 +47,486 @@
 
 \maketitle
 
-\section{3.1 Questions}
+\section*{Part I [50\%]}
+
+\subsection*{1.1 Linear Regression}
+
+\textbf{Linear regression overview:} Given a set of data:
+\[
+\{(x_1, y_1), (x_2, y_2), \ldots, (x_m, y_m)\}
+\tag{1}\]
+where \(x = (x_1, \ldots, x_n)\) is a vector in \(\mathbb{R}^n\) and \(y\) is a real number. Linear regression finds a vector \(\mathbf{w} \in \mathbb{R}^n\) such that the sum of squared errors
+\[
+\text{SSE} = \sum_{t=1}^m (y_t - w \cdot x_t)^2 \tag{2}
+\]
+is minimized. This is expressible in matrix form by defining \(X\) to be the \(m \times n\) matrix
+\[
+X = 
+\begin{pmatrix}
+x_{1,1} & x_{1,2} & \cdots & x_{1,n} \\
+x_{2,1} & x_{2,2} & \cdots & x_{2,n} \\
+\vdots & \vdots & \ddots & \vdots \\
+x_{m,1} & x_{m,2} & \cdots & x_{m,n}
+\end{pmatrix}, \tag{3}
+\]
+and defining \(\mathbf{y}\) to be the column vector \(\mathbf{y} = (y_1, \ldots, y_m)\). The vector \(\mathbf{w}\) then minimizes
+\[
+(Xw - y)^\top (Xw - y).
+\]
+
+In linear regression with basis functions, we fit the data sequence with a linear combination of basis functions \((\phi_1, \phi_2, \ldots, \phi_k)\) where \(\phi_i : \mathbb{R}^n \to \mathbb{R}\) which defines a feature map from \(\phi : \mathbb{R}^n \to \mathbb{R}^k\):
+\[
+\phi(x) = (\phi_1(x), \ldots, \phi_k(x)), \quad x \in \mathbb{R}^n.
+\]
+
+We use the basis functions to transform the data as follows
+\[
+\{((\phi_1(x_1), \ldots, \phi_k(x_1)), y_1), \ldots, ((\phi_1(x_m), \ldots, \phi_k(x_m)), y_m)\}, \tag{4}
+\]
+and then applying linear regression above to this transformed dataset. In matrix notation, we may denote this transformed dataset as
+\[
+\Phi := 
+\begin{pmatrix}
+\phi(x_1) \\
+\vdots \\
+\phi(x_m)
+\end{pmatrix}
+=
+\begin{pmatrix}
+\phi_1(x_1) & \cdots & \phi_k(x_1) \\
+\vdots & \ddots & \vdots \\
+\phi_1(x_m) & \cdots & \phi_k(x_m)
+\end{pmatrix},
+\quad (m \times k) \tag{5}
+\]
+Linear regression on the transformed dataset thus finds a \(k\)-dimensional vector \(\mathbf{w} = (w_1, \ldots, w_k)\) such that
+\[
+(\Phi w - y)^\top (\Phi w - y) = \sum_{t=1}^m \left(y_t - \sum_{i=1}^k w_i \phi_i(x_t) \right)^2 \tag{6}
+\]
+is minimized.
+
+A common basis (\(n = 1\)) used is the polynomial basis \(\{\phi_1(x) = 1, \phi_2(x) = x, \phi_3(x) = x^2, \phi_4(x) = x^3, \ldots, \phi_k(x) = x^{k-1}\}\) of dimension \(k\) (order \(k - 1\)). In the figure below, we give a simple fit of four points produced by a linear (\(k = 2\)) and cubic (\(k = 4\)) polynomial.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{first-fig-ex-1.png}
+    \caption{Data set \(\{(1,3), (2,2), (3,0), (4,5)\}\) fitted with basis \(\{1, x\}\) and basis \(\{1, x, x^2, x^3\}\).}
+    \label{fig:enter-label}
+\end{figure}
+
+\subsubsection*{1. [5 pts]: For each of the polynomial bases of dimension \(k = 1, 2, 3, 4\) fit the data set of Figure 1 
+\(\{(1,3), (2,2), (3,0), (4,5)\}\).}
+
+\begin{enumerate}
+    \item[(a)] Produce a plot similar to Figure 1, superimposing the four different curves corresponding to each fit over the four data points.
+
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.5pt}}
+    
+    \vspace{20pt}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{Screenshot 2024-11-20 at 14.13.57.png}
+        \caption{Curves representing the fit of polynomials from degree 1 to 4}
+        \label{fig:enter-label}
+    \end{figure}
+
+    \vspace{25pt}
+    
+    \item[(b)] Give the equations corresponding to the curves fitted for \(k = 1, 2, 3\). The equation corresponding to \(k = 4\) is 
+    \(-5 + 15.17x - 8.5x^2 + 1.33x^3.\)
+
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.5pt}}
+
+
+    The equations of the curves from Fig. 2 are the following:
+    \begin{align*}
+    k=1: \quad & y = 2.50 \\
+    \\
+    k=2: \quad & y = 1.50 + 0.40x \\
+    \\
+    k=3: \quad & y = 9.00 - 7.10x + 1.50x^2 \\
+    \\
+    k=4: \quad & y = -5.00 + 15.17x - 8.50x^2 + 1.33x^3 \\
+    \end{align*}
+    
+    \item[(c)] For each fitted curve \(k = 1, 2, 3, 4\) give the mean square error where 
+    \[
+    \text{MSE} = \frac{\text{SSE}}{m}.
+    \]
+
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.5pt}}
+
+
+    For each curve the MSE is given by:
+    \begin{align*}
+        k=1: \text{MSE:} \quad & 3.25 \\
+        k=2: \text{MSE:} \quad & 3.05 \\
+        k=3: \text{MSE:} \quad & 0.80 \\
+        k=4: \text{MSE:} \quad & 0.00 \\
+    \end{align*}    
+\end{enumerate}
+
+\subsubsection*{2. [10 pts]: In this part, we will illustrate the phenomena of \emph{overfitting}.}
+
+\begin{enumerate}
+    \item[(a)] Define
+    \[
+    g_\sigma(x) := \sin^2(2\pi x) + \epsilon, \tag{7}
+    \]
+    where \(\epsilon\) is a random variable distributed normally with mean \(0\) and variance \(\sigma^2\). Thus, \(g_\sigma(x)\) is a \emph{random} function such that \(\sin^2(2\pi x)\) is computed and then the normal noise is added on each ``call'' of the function. We then sample "\(x_i\)" uniformly at random from the interval \([0, 1]\) 30 times, creating \((x_1, \ldots, x_{30})\), and apply \(g_{0.07}\) to each \(x\), creating the data set
+    \[
+    S_{0.07,30} = \{(x_1, g_{0.07}(x_1)), \ldots, (x_{30}, g_{0.07}(x_{30}))\}. \tag{8}
+    \]
+    
+    \begin{enumerate}
+        \item[i.] Plot the function \(\sin^2(2\pi x)\) in the range \(0 \leq x \leq 1\) with the points of the above data set superimposed. 
+
+        \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.5pt}}
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.7\linewidth]{(a)-ex-2.png}
+            \caption{Plot of \(\sin^2(2\pi x)\) within the range \(0 \leq x \leq 1\) superimposed by points \(S_{0.07,30}\)}
+            \label{sin-[i]}
+        \end{figure}
+
+        \item[ii.] Fit the data set with a polynomial bases of dimension \(k = 2,5,10,14,18\) plot each of these 5 curves superimposed over a plot of data points.
+
+        \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.5pt}}
+
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.7\linewidth]{(a)-ii-ex-2.png}
+            \caption{Fit of polynomials of degree [2,5,10,14,18] to data points}
+            \label{poly-[ii]}
+        \end{figure}
+    \end{enumerate}
+
+    \item[(b)] Let the training error \(\text{te}_k(S)\) denote the MSE of the fitting of the data set \(S\) with polynomial basis of dimension \(k\). Plot the natural log (\(\ln\)) of the training error versus the polynomial dimension \(k = 1, \ldots, 18\) (this should be a decreasing function).
+
+    Our plot is given in figure \ref{lnMSE} by the blue line.
+
+    \item [(c)] Generate a test set \(T\) of a thousand points,
+    \[
+    T_{0.07,1000} = \{(x_1, g_{0.07}(x_1)), \ldots, (x_{1000}, g_{0.07}(x_{1000}))\}. \tag{9}
+    \]
+    
+    Define the test error \(\text{tse}_k(S, T)\) to be the MSE of the test set \(T\) on the polynomial of dimension \(k\) fitted from training set \(S\). Plot the \(\ln\) of the test error versus the polynomial dimension \(k = 1, \ldots, 18\). Unlike the training error, this is not a decreasing function. This is the phenomena of \emph{overfitting}. Although the training error decreases with growing \(k\), the test error eventually increases since, rather than fitting the function, in a loose sense, we begin to fit to the noise.
+
+    Our plot for the test error is given in figure \ref{lnMSE} by the orange line. We can see the error starting to increase again after k=7.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{ln-ex-1.png}
+        \caption{Train and test natural logarithm of the MSE for polynomials of degree k}
+        \label{lnMSE}
+    \end{figure}
+
+
+    \item [(d)] For any given set of random numbers, we will get slightly different training curves and test curves. It is instructive to see these curves smoothed out. For this part, repeat items (b) and (c), but instead of plotting the results of a single ``run,'' plot the average results of 100 runs (note: plot \(\ln(\text{avg})\) rather than the \(\text{avg}(\ln)\)).
+
+    Looking at figure \ref{overfit-1} we can clearly see the phenomenon of overfitting when averaging over 100 runs, the test error curve shoots up when the train error curve goes down.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{overfit-ex-1.png}
+        \caption{Graph of the average train error and test error when averaging for 100 runs}
+        \label{overfit-1}
+    \end{figure}
+
+    \subsubsection*{3. [5 pts]:}
+    Now use the basis (for \(k = 1, \ldots, 18\))
+    \[
+    \{\sin(1\pi x), \sin(2\pi x), \sin(3\pi x), \ldots, \sin(k\pi x)\}.
+    \]
+    
+    Repeat the experiments in 2 (b-d) with the above basis.
+
+    In figure \ref{fig:not_100} we can see the train and test error for value of k from 1 to 18 with a sine basis.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{not-100-right.png}
+        \caption{Graph of the train and test error for values of k from 1 to 18 with a sine basis.}
+        \label{fig:not_100}
+    \end{figure}
+
+    In figure \ref{100} we can see the train and test error for value of k from 1 to 18 with a sine basis averaged over 100 runs.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{100-right.png}
+        \caption{Graph of the train and test error for values of k from 1 to 18 with a sine basis averaged over 100 runs.}
+        \label{100}
+    \end{figure}
+\end{enumerate}
+
+\subsection*{1.2 Filtered Boston housing and kernels}
+
+In this section, we will use kernel methods to extend linear regression. Boston housing is a classic dataset where you are given 13 values, and the goal is to predict the 14th, which is the median house price. Instead of the original dataset, we will instead use a modified dataset removing the ethically-suspect ``column B.'' Thus, we will use 12 attributes to predict the 13th. The unmodified dataset is described in more detail at \url{http://www.cs.toronto.edu/~delve/data/boston/bostonDetail.html}. There are 506 entries which we will split into train and test.
+The \textbf{filtered} Boston housing dataset as a ``.csv'' file is located at
+\url{http://www.cs.ucl.ac.uk/staff/M.Herbster/boston-filter}.
+
+\subsubsection*{4. [10 pts]: Baseline versus full linear regression.}
+Rather than use all of our attributes for prediction, it is often useful to see how well a baseline method works for a problem. In this exercise, we will compare the following:
+\begin{enumerate}
+    \item[(a)] Predicting with the mean \(y\)-value on the training set.
+    \item[(b)] Predicting with a single attribute and a bias term.
+    \item[(c)] Predicting with all the attributes.
+\end{enumerate}
+
+The training set should be \(2/3\), and the test set should be \(1/3\) of your data in (a)-(c). In the following, average your results over 20 runs (each run based on a different \(2/3, 1/3\) random split).
+
+\begin{enumerate}
+    \item[a.] \textbf{Naive Regression.} Create a vector of ones that is the same length as the training set using the function \texttt{ones}. Do the same for the test set. By using these vectors, we will be fitting the data with a constant function. Perform linear regression on the training set. Calculate the MSE on the training and test sets and note down the results.
+
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.5pt}}
+    
+    \begin{enumerate}
+        Average Training MSE: 82.83
+        Average Test MSE: 87.82
+    \end{enumerate}
+    
+    \item[b.] Give a simple interpretation of the constant function in `a.' above.
+
+    The constant function in part "a" simply predicts the average MEDV value from the training set for every observation, ignoring any influence of features like crime rate or number of rooms. This naive approach assumes that all variability in housing prices is random and does not capture patterns in the data. It serves as a baseline: if a more complex model cannot outperform this constant prediction, it suggests that the model may not be effectively using the available features to predict MEDV.
+    
+    \item[c.] \textbf{Linear Regression with single attributes.} For each of the twelve attributes, perform a linear regression using only the single attribute but incorporating a bias term so that the inputs are augmented with an additional 1 entry, \((x_i, 1)\), so that we learn a weight vector \(\mathbf{w} \in \mathbb{R}^2\). For each of the twelve regressions, calculate the MSE on the training and test sets and note down the results.
+
+    \[
+    \begin{array}{|l|c|c|}
+    \hline
+    \textbf{Attribute} & \textbf{Average Training MSE} & \textbf{Average Test MSE} \\
+    \hline
+    \text{CRIM} & 70.15 & 76.35 \\
+    \text{ZN} & 72.87 & 75.05 \\
+    \text{INDUS} & 63.32 & 67.63 \\
+    \text{CHAS} & 80.51 & 85.25 \\
+    \text{NOX} & 67.65 & 72.12 \\
+    \text{RM} & 42.87 & 45.44 \\
+    \text{AGE} & 71.18 & 75.25 \\
+    \text{DIS} & 77.66 & 82.43 \\
+    \text{RAD} & 70.55 & 75.60 \\
+    \text{TAX} & 64.38 & 69.23 \\
+    \text{PTRATIO} & 62.06 & 64.15 \\
+    \text{LSTAT} & 37.92 & 40.03 \\
+    \hline
+    \end{array}
+    \]
+    
+    \item[d.] \textbf{Linear Regression using all attributes.} Now we would like to perform linear regression using all of the data attributes at once. Perform linear regression on the training set using this regressor, and incorporate a bias term as above. Calculate the MSE on the training and test sets and note down the results. You should find that this method outperforms any of the individual regressors.
+
+    \begin{enumerate}
+        Average Training MSE: 21.94
+        Average Test MSE: 24.63
+    \end{enumerate}
+\end{enumerate}
+
+\subsection*{1.3 Kernelised Ridge Regression}
+
+For nonlinear regression, the dual version will prove important. Obviously, linear regression is not capable of achieving a good predictive performance on a nonlinear data set. Here, the dual formulation will prove extremely useful, in combination with the \emph{kernel trick}.
+
+For our exercises, we will use a slight variation on the optimisation (as compared to the notes) that defines ridge regression for a training set with \(\ell\) examples,
+\[
+\mathbf{w}^* = \arg\min_{\mathbf{w} \in \mathbb{R}^n} \frac{1}{\ell} \sum_{i=1}^\ell \left( \mathbf{x}_i^\top \mathbf{w} - y_i \right)^2 + \gamma \mathbf{w}^\top \mathbf{w}. \tag{10}
+\]
+
+i.e., we have replaced the sum of the square errors with the mean square error (MSE). For a given kernel function \(K\), define the kernel matrix \(\mathbf{K}\) for a training set of size \(\ell\) elementwise via
+\[
+K_{i,j} := K(\mathbf{x}_i, \mathbf{x}_j).
+\]
+
+The dual optimisation formulation after kernelization is
+\[
+\boldsymbol{\alpha}^* = \arg\min_{\boldsymbol{\alpha} \in \mathbb{R}^\ell} \frac{1}{\ell} \sum_{i=1}^\ell \left( \sum_{j=1}^\ell \alpha_j K_{i,j} - y_i \right)^2 + \gamma \boldsymbol{\alpha}^\top \mathbf{K} \boldsymbol{\alpha}. \tag{11}
+\]
+
+Now, if we use \(\mathbf{y} := (y_1, \ldots, y_\ell)^\top\) to denote a vector that contains the \(y\)-values of the training set, we may solve in the dual as follows:
+\[
+\boldsymbol{\alpha}^* = \left( \mathbf{K} + \gamma \mathbf{I}_\ell \right)^{-1} \mathbf{y}. \tag{12}
+\]
+
+\[
+\mathbf{I}_\ell
+\]
+denotes the \(\ell \times \ell\) identity matrix. The evaluation of the regression function on a test point can be reformulated as:
+\[
+y_{\text{test}} = \sum_{i=1}^\ell \alpha_i^* K(\mathbf{x}_i, \mathbf{x}_{\text{test}}),  \tag{13}
+\]
+where the \(K\) is the kernel function.
+
+\subsubsection*{5. [20 pts] ``Kernel Ridge Regression''}
+
+In this exercise, we will perform kernel ridge regression (KRR) on the dataset using the Gaussian kernel,
+\[
+K(\mathbf{x}_i, \mathbf{x}_j) = \exp \left( - \frac{\|\mathbf{x}_i - \mathbf{x}_j\|^2}{2\sigma^2} \right). \tag{14}
+\]
+
+For this question, you will hold out \(2/3\) of data for training and report the test results on the remaining \(1/3\).
+
+\begin{enumerate}
+    \item[a.] Create a vector of \(\gamma\) values \([2^{-40}, 2^{-39}, \ldots, 2^{-26}]\) and a vector of \(\sigma\) values \([2^{7}, 2^{7.5}, \ldots, 2^{12.5}, 2^{13}]\) (recall that \(\sigma\) is a parameter of the Gaussian kernel; see equation (14)). Perform kernel ridge regression on the \emph{training set} using five-fold cross-validation to choose among all pairings of the values of \(\gamma\) and \(\sigma\). Choose the \(\gamma\) and \(\sigma\) values that perform the best to compute the predictor (by then retraining with those parameters on the training set) that you will use to report the test and training error.
+
+    \noindent\textcolor{gray}{\rule{0.1\linewidth}{0.5pt}}
+    
+    \(\gamma^*\)  (optimal regularisation strength): 2.33e-10
+    
+     \(\sigma^*\)  (optimal kernel coefficient): 1024,
+     
+    Optimal Cross-Validation (MSE): 16.97
+
+    
+    \item[b.] Plot the ``cross-validation error'' (mean over folds of validation error) as a function of \(\gamma\) and \(\sigma\).
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{heatmap-ex-1.png}
+        \caption{Heatmap of the cross-validation error as a function of gamma and sigma.}
+        \label{heatmap}
+    \end{figure}
+    
+    \item[c.] Calculate the MSE on the training and test sets for the best \(\gamma\) and \(\sigma\).
+
+    
+    Training Error (MSE): 8.05
+    
+    Test Error (MSE): 12.59
+    
+    \item[d.] Repeat ``exercise 5a,c'' and ``exercise 5a,c'' over 20 random \(2/3,1/3\) splits of your data. Record the train/test error and the standard deviations (\(\sigma'\)) of the train/test errors and summarise these results in the following type of table. \emph{Additional clarification:} When repeating 5a,c, you will thus be generating 20 best (\(\gamma, \sigma\)) pairs.
+\end{enumerate}
+
+
+Our results' table is the following:
+
+\[
+\begin{array}{|l|c|c|}
+\hline
+\textbf{Method} & \textbf{MSE train} & \textbf{MSE test} \\
+\hline
+\text{Naive Regression} & 82.83 \pm 4.68 & 87.82 \pm 9.37 \\
+\text{Linear Regression (attribute 1)} & 70.15 \pm 4.70 & 76.35 \pm 10.83 \\
+\text{Linear Regression (attribute 2)} & 72.87 \pm 4.95 & 75.05 \pm 9.92 \\
+\text{Linear Regression (attribute 3)} & 63.32 \pm 4.70 & 67.63 \pm 9.46 \\
+\text{Linear Regression (attribute 4)} & 80.51 \pm 4.19 & 85.25 \pm 8.88 \\
+\text{Linear Regression (attribute 5)} & 67.65 \pm 4.28 & 72.12 \pm 8.67 \\
+\text{Linear Regression (attribute 6)} & 42.87 \pm 2.90 & 45.44 \pm 5.85 \\
+\text{Linear Regression (attribute 7)} & 71.18 \pm 4.63 & 75.25 \pm 9.34 \\
+\text{Linear Regression (attribute 8)} & 77.66 \pm 4.92 & 82.43 \pm 9.86 \\
+\text{Linear Regression (attribute 9)} & 70.55 \pm 4.29 & 75.60 \pm 8.67 \\
+\text{Linear Regression (attribute 10)} & 64.38 \pm 4.42 & 69.23 \pm 8.90 \\
+\text{Linear Regression (attribute 11)} & 62.06 \pm 3.95 & 64.15 \pm 8.00 \\
+\text{Linear Regression (attribute 12)} & 37.92 \pm 2.10 & 40.03 \pm 4.41 \\
+\text{Linear Regression (all attributes)} & 21.94 \pm 1.83 & 24.63 \pm 3.81 \\
+\text{Kernel Ridge Regression} & 8.24 \pm 0.81 & 12.57 \pm 2.10 \\
+\hline
+\end{array}
+\]
+
+\section*{2 PART II [20\%]}
+
+\subsection*{2.1 $k$-Nearest Neighbors}
+
+In this section, you will implement the $k$-NN algorithm and explore its performance as a function of $k$. Given a new data point, the $k$-NN algorithm attributes its label to the majority label of its $k$ nearest neighbors. See \href{https://example.com}{here} for details.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{example-ex-2.png}
+    \caption{A hypothesis $h_{S,v}$ visualized with $|S| = 100$ and $v = 3$.}
+    \label{partII}
+\end{figure}
+
+\subsubsection*{2.1.1 Generating the data}
+
+A voted-center hypothesis is a function $h_{S,v}: [0,1]^2 \to \{0,1\}$, where $S = \{(x_1, y_1), (x_2, y_2), \ldots, (x_{|S|}, y_{|S|})\}$ is a set of labeled centers with each $x_i \in [0,1]^2$ and $y_i \in \{0,1\}$ and $v$ is a positive integer. In this coursework, we will always set $v := 3$ for all of the exercises in this subsection. Where $h_{S,v}(x) = 0$ if the majority of the $v$ nearest $x_i$ to $x$ in $S$ are 0; similarly for $h_{S,v}(x) = 1$ and finally in certain ``corner'' cases where the ``majority of $v$'' will not be well-defined and in that case $h_{S,v}(x) = 0$. See Section 2.1.4 for addressing these corner cases.
+
+In Figure \ref{partII}, one such hypothesis is visualized with $|S| = 100$ and $v = 3$. The white areas in the mapping to 0 and the turquoise areas to 1, the corresponding centers are green and blue.
+
+\begin{enumerate}
+    \item [[5 pts]] Produce a visualization of an $h_{S,v}$ similar to the figure.
+\end{enumerate}
+
+First, we will need to generate a random $h$. Do this by sampling 100 centers uniformly at random from $[0,1]^2$ with 100 corresponding labels sampled uniformly at random from $\{0,1\}$. Later, we will need to generate more random hypotheses. Call this distribution over hypotheses generated by this random process $P_h$.
+
+\noindent\textcolor{gray}{\rule{0.1\linewidth}{0.5pt}}
+
+\vspace{15pt}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Screenshot 2024-11-20 at 15.16.29.png}
+    \caption{Plot of $h_{S,v}$}
+    \label{fig:enter-label}
+\end{figure}
+
+
+\subsubsection*{2.1.2 Estimated generalization error of $k$-NN as a function of $k$}
+
+In this section, we visualize the performance as a function of $k$. You will produce a figure where the vertical axis is the estimated generalization error and the horizontal axis is $k = 1, \ldots, 49$.
+
+Generating our noisy data. Given an $h_{S,v}$, the underlying probability distribution $p(x, y)$ is determined by sampling $x$ uniformly at random from $[0,1]^2$ and then its corresponding $y$ value is then generated by flipping based on $P(\text{heads}) = 0.5P(h_{S,v}(x) = 1)$. When you generate training and test sets, they will both come from this distribution.
+
+\begin{enumerate}
+    \item [[7 pts]] a) Produce a visualization using Protocol A (see Figure \ref{pseudocode 1}). b) By using roughly 5 sentences, explain why the figure is the approximate shape that it is and comment on any interesting features of the figure.
+\end{enumerate}
+
+\noindent\textcolor{gray}{\rule{0.1\linewidth}{0.5pt}}
+
+For low values of k, the clusters are small enough that they over-fit to the dataset. From the bias-variance trade-off perspective, we can say that the variance is too high, and the model captures noise in the training data. As we increase k, the clusters become larger and the model gradually increases in bias as it cannot fit the data as effectively. It begins to miss finer details that have predictive capability. The optimal k for this dataset is found at k = 7.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Screenshot 2024-11-20 at 15.24.20.png}
+    \caption{Generalisation error fro different values of k}
+    \label{fig:enter-label}
+\end{figure}
+
+
+
+\subsubsection*{2.1.3 Determine the optimal k as a function of the number of training points (m)}
+In this section you will estimate the optimal \(k\) as a function of the number of training points. Perform the following experimental protocol.
+
+\begin{enumerate}
+    \item[[8 pts]] a) Produce a visualisation using Protocol B (see Figure \ref{pseudocode 2}). I.e, plotting m versus optimal k b) Using roughly 4 sentences explain why the figure is the approximate shape that it is.
+\end{enumerate}
+
+
+\noindent\textcolor{gray}{\rule{0.1\linewidth}{0.5pt}}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Screenshot 2024-11-20 at 15.19.04.png}
+    \caption{Optimal k vs Training Set Size (m)}
+    \label{fig:enter-label}
+\end{figure}
+
+As the training set size grows, the optimal k increases because larger training sets make it possible to use a larger neighbourhood without over-fitting to noise. For large m, the optimal k stabilises. This happens because additional data points do not significantly change the distribution of the data or improve the generalisation further. The optimal k is large enough to balance the trade-off between variance and bias.
+
+
+
+\subsubsection*{2.1.4 Additional Clarification}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{pseudocode-1.png}
+    \caption{Experimental Protocol A: k-NN. For computational purposes, you may reorder the loops in the protocol as long as this is done in a principled way.}
+    \label{pseudocode 1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{pseudocode 2.png}
+    \caption{Experimental Protocol B: k-NN. For computational purposes, you may reorder the loops in the protocol, as long as this is done in a principled way.}
+    \label{pseudocode 2}
+\end{figure}
+
+Note both the $k$-NN algorithm and the hypothesis $h_{S,v}$ can produce ``undefined'' results in certain corner cases for individual $x$'s. Resolve these cases by generating either the label or prediction uniformly at random.
+
+
+\section*{Part III [30\%]}
 
 \vspace{0.5cm}
 \noindent\textbf{9. Kernel Modification}
@@ -86,6 +601,7 @@
     \[
     \inf_{f: \mathcal{X} \rightarrow \mathcal{Y}} \mathbb{E}_\rho(f) = 0.
     \]
+    
     \item[(b)] Let \( C^n \) denote the set of all possible datasets of size \( n \) consisting of points in \( C \), i.e., \( C^n = \{S_1, \dots, S_k\} \) where \( k = |C^n| = (2n)^n \). For each \( j = 1, \dots, k \) and for each input set \( S_j = \{x_1, \dots, x_n\} \in C^n \), define the corresponding dataset for function \( f_i \) as
     \[
     S_j^i = \{(x_1, f_i(x_1)), \dots, (x_n, f_i(x_n))\}.
@@ -96,30 +612,78 @@
     \[
     \max_{i=1, \dots, T} \mathbb{E}_{S \sim \rho_i^m} \mathbb{E}_{\rho_i}(A(S)) \ge \min_{j=1, \dots, k} \frac{1}{T} \sum_{i=1}^T \mathbb{E}_{\rho_i}(A(S_j^i)).
     \]
-    Using the hint, we establish that for any \( i = 1, \dots, T \),
+    
+    Since the distribution is \(\rho_i\) as defined we have the following:
     \[
-    \mathbb{E}_{S \sim \rho_i^m} \mathbb{E}_{\rho_i}(A(S)) = \frac{1}{2n} \sum_{j=1}^k \mathbb{E}_{\rho_i}(A(S_j^i)).
+    \mathbb{E}_{S \sim \rho_i^m} \mathbb{E}_{\rho_i}(A(S)) = \frac{1}{k}\sum_{j=1}^k\mathbb{E}_{\rho_i}(A(S_j^i))
     \]
-    By averaging over all functions \( f_i \) and datasets \( S_j \), we obtain the inequality
-    \[
-    \max_{i=1, \dots, T} \mathbb{E}_{S \sim \rho_i^m} \mathbb{E}_{\rho_i}(A(S)) \ge \min_{j=1, \dots, k} \frac{1}{T} \sum_{i=1}^T \mathbb{E}_{\rho_i}(A(S_j^i)),
-    \]
-    \item[(c)] To establish a lower bound on the risk, we introduce a subset \( S_j' \subset C \) such that \( S_j' \) contains elements not present in \( S_j \). Specifically, for each dataset \( S_j \), let \( S_j' = \{v_1, \dots, v_p\} \subset C \setminus S_j \), where \( p \ge m \). This subset \( S_j' \) is chosen so that it consists of points disjoint from \( S_j \), meaning the learning algorithm \( A \) has not encountered any elements of \( S_j' \) during training on \( S_j \).
 
-    Now, consider the expected risk of the algorithm over the points in \( S_j' \), with respect to the function \( f_i \). We define the expected error over \( S_j' \) as:
+    Using the second hint which says that for any set of scalars $\alpha_1, \ldots, \alpha_m$ we have \(\max_{\ell} \alpha_\ell \geq \frac{1}{m} \sum_{\ell=1}^m \alpha_\ell \geq \min_{\ell} \alpha_\ell.
+    \), i.e. the max is greater than the average which is itself greater than the min, we have:
+
     \[
-    \frac{1}{T} \sum_{i=1}^T \mathbb{E}_{\rho_i}(A(S_j^i)) = \frac{1}{T} \sum_{i=1}^T \frac{1}{p} \sum_{v \in S_j'} \mathbf{1}_{\{A(S_j)(v) \neq f_i(v)\}}.
-    \]
-    Using the hint provided, we apply the inequality
-    \[
-    \frac{1}{p} \sum_{v \in S_j'} \mathbf{1}_{\{A(S_j)(v) \neq f_i(v)\}} \geq \min_{v \in S_j'} \mathbf{1}_{\{A(S_j)(v) \neq f_i(v)\}},
-    \]
-    which gives us a lower bound on the risk over \( S_j' \) by focusing on the minimum error over points in \( S_j' \). This allows us to bound the average risk from below as:
-    \[
-    \frac{1}{T} \sum_{i=1}^T \mathbb{E}_{\rho_i}(A(S_j^i)) \geq \min_{j=1, \dots, k} \frac{1}{T} \sum_{i=1}^T \mathbb{E}_{\rho_i}(A(S_j^i)).
+    \max_{i = 1, \dots, T} \mathbb{E}_{S \sim \rho_i^m} \mathbb{E}_{\rho_i}(A(S)) 
+    \geq \frac{1}{T} \sum_{i=1}^T \frac{1}{k}\sum_{j=1}^k\mathbb{E}_{\rho_i}(A(S_j^i)) 
+    = \frac{1}{k} \sum_{j=1}^k \frac{1}{T} \sum_{i=1}^T \mathbb{E}_{\rho_i}(A(S_j^i))  
+    \geq \min_{j = 1, \dots, k} \frac{1}{T} \sum_{i=1}^T \mathbb{E}_{\rho_i}(A(S_j^i))
     \]
     
-    Thus, we conclude that the expected risk over the subset \( S_j' \) establishes a lower bound for the overall risk of the learning algorithm \( A \) by considering errors on points that the algorithm has not seen during training. This bound on the expected error across unseen data highlights that there exists a minimum achievable risk, supporting the "No Free Lunch" theorem in machine learning.
+    \item[(c)] To establish a lower bound on the risk, we introduce a subset \( S_j' \subset C \) such that \( S_j' \) contains elements not present in \( S_j \). Specifically, for each dataset \( S_j \), let \( S_j' = \{v_1, \dots, v_p\} \subset C \setminus S_j \), where \( p \ge m \). This subset \( S_j' \) is chosen so that it consists of points disjoint from \( S_j \), meaning the learning algorithm \( A \) has not encountered any elements of \( S_j' \) during training on \( S_j \).
+
+    We want to show the following inequality:
+    \[
+    \frac{1}{T} \sum_{i=1}^T \mathcal{E}_{\rho_i}(A(S_j^i)) \geq \frac{1}{2} \min_{v \in R_j} \frac{1}{T} \sum_{i=1}^T \mathbf{1}\{A(S_j^i)(v) \neq f_i(v)\}.
+    \]
+        
+    The risk \( \mathcal{E}_{\rho_i}(A(S_j^i)) \) measures the average error of the algorithm \( A \), trained on \( S_j^i \), over the dataset \( C \) under the distribution \( \rho_i \). It is defined as:
+    \[
+    \mathcal{E}_{\rho_i}(A(S_j^i)) = \int_{x, y} \mathbf{1}\{A(S_j^i)(x) \neq y\} \, d\rho_i(x, y).
+    \]
+    
+    Since \( \rho_i \) assigns probability only to pairs \( (x, f_i(x)) \), where \( x \in C \) and \( f_i(x) \) is the true output:
+    \[
+    \mathcal{E}_{\rho_i}(A(S_j^i)) = \frac{1}{|C|} \sum_{x \in C} \mathbf{1}\{A(S_j^i)(x) \neq f_i(x)\}.
+    \]
+    
+    The dataset \( C \) can be partitioned into two subsets: the training set \( S_j \) and its complement \( R_j \), where \( |C| = 2n \). Substituting this partition, the risk becomes:
+    \[
+    \mathcal{E}_{\rho_i}(A(S_j^i)) = \frac{1}{2n} \left( \sum_{x \in S_j} \mathbf{1}\{A(S_j^i)(x) \neq f_i(x)\} + \sum_{v \in R_j} \mathbf{1}\{A(S_j^i)(v) \neq f_i(v)\} \right).
+    \]
+    
+    Since each term in the summation is non-negative, the second term provides a lower bound:
+    \[
+    \mathcal{E}_{\rho_i}(A(S_j^i)) \geq \frac{1}{2n} \sum_{v \in R_j} \mathbf{1}\{A(S_j^i)(v) \neq f_i(v)\}.
+    \]
+    
+    Taking the average over \( T \) iterations:
+    \[
+    \frac{1}{T} \sum_{i=1}^T \mathcal{E}_{\rho_i}(A(S_j^i)) \geq \frac{1}{T} \sum_{i=1}^T \frac{1}{2n} \sum_{v \in R_j} \mathbf{1}\{A(S_j^i)(v) \neq f_i(v)\}.
+    \]
+    
+    Rewriting:
+    \[
+    \frac{1}{T} \sum_{i=1}^T \mathcal{E}_{\rho_i}(A(S_j^i)) \geq \frac{1}{2n} \sum_{v \in R_j} \frac{1}{T} \sum_{i=1}^T \mathbf{1}\{A(S_j^i)(v) \neq f_i(v)\}.
+    \]
+    
+    Define \( a_v = \frac{1}{T} \sum_{i=1}^T \mathbf{1}\{A(S_j^i)(v) \neq f_i(v)\} \), the average error at \( v \in R_j \). Using the mean-minimum inequality provided by the hint:
+    \[
+    \frac{1}{|R_j|} \sum_{v \in R_j} a_v \geq \min_{v \in R_j} a_v.
+    \]
+    
+    Substitute \( a_v \) back:
+    \[
+    \frac{1}{T |R_j|} \sum_{v \in R_j} \sum_{i=1}^T \mathbf{1}\{A(S_j^i)(v) \neq f_i(v)\} \geq \min_{v \in R_j} \frac{1}{T} \sum_{i=1}^T \mathbf{1}\{A(S_j^i)(v) \neq f_i(v)\}.
+    \]
+    
+    Multiply by \( \frac{|R_j|}{2n} \) (where \( |R_j| = n \)):
+    \[
+    \frac{1}{T} \sum_{i=1}^T \frac{1}{2n} \sum_{v \in R_j} \mathbf{1}\{A(S_j^i)(v) \neq f_i(v)\} \geq \frac{|R_j|}{2n} \min_{v \in R_j} \frac{1}{T} \sum_{i=1}^T \mathbf{1}\{A(S_j^i)(v) \neq f_i(v)\}.
+    \]
+    
+    Substitute \( |R_j| = n \):
+    \[
+    \frac{1}{T} \sum_{i=1}^T \mathcal{E}_{\rho_i}(A(S_j^i)) \geq \frac{1}{2} \min_{v \in R_j} \frac{1}{T} \sum_{i=1}^T \mathbf{1}\{A(S_j^i)(v) \neq f_i(v)\}.
+    \]
 
     \item[(d)] With the same assumptions as above, we now aim to show that for any \( v \in R_j \),
     \[
@@ -168,6 +732,3 @@
 \end{itemize}
 
 \end{document}
-% Minor change to trigger GitHub Actions
-% Trigger GitHub Actions workflow
-% Trigger GitHub Actions
