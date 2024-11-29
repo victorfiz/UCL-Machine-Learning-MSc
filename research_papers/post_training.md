@@ -28,7 +28,9 @@ In standard RL, the agent updates its policy $\pi(a \mid s)$ to increase the lik
 
 The RL loss function is given by:
 
-$\mathcal{L}_{\text{RL}} = - \mathbb{E}_{(s, a, r)} \left[ \log \pi(a \mid s) \cdot \hat{r} \right]$
+$$
+\mathcal{L}_{\text{RL}} = - \mathbb{E}_{(s, a, r)} \left[ \log \pi(a \mid s) \cdot \hat{r} \right]
+$$
 
 where $\hat{r}$ is the reward received after taking action $a$ in state $s$, and the goal is to maximize $\hat{r}$ in the long run.
 
@@ -36,7 +38,7 @@ Direct Preference Optimization (DPO) learns by optimizing pairwise preferences b
 
 The DPO loss function is given by:
 
-$\mathcal{L}_{DPO}(\pi\theta; \pi_{\text{ref}}) = - \mathbb{E}_{(x, y_w, y_l) \sim \mathcal{D}} \left[ \log \sigma \left( \beta \log \frac{\pi\theta(y_w \mid x)}{\pi_{\text{ref}}(y_w \mid x)} - \beta \log \frac{\pi\theta(y_l \mid x)}{\pi_{\text{ref}}(y_l \mid x)} \right) \right]$
+<img src="http://latex.codecogs.com/gif.latex?\mathcal{L}_{DPO}(\pi\theta;%20\pi_{\text{ref}})%20=%20-\mathbb{E}_{(x,%20y_w,%20y_l)%20\sim%20\mathcal{D}}%20\left[%20\log%20\sigma%20\left(%20\beta%20\log%20\frac{\pi\theta(y_w%20\mid%20x)}{\pi_{\text{ref}}(y_w%20\mid%20x)}%20-%20\beta%20\log%20\frac{\pi\theta(y_l%20\mid%20x)}{\pi_{\text{ref}}(y_l%20\mid%20x)}%20\right)%20\right]" />
 
 
 
