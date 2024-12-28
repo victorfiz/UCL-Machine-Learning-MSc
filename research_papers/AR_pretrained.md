@@ -23,3 +23,15 @@ with VQ-VAE-2</a></summary>
 X
 
 </details>
+<details>
+<summary><a href="https://arxiv.org/pdf/2401.08541">Scalable Pre-training of Large Autoregressive Image Models</a></summary>
+
+X
+
+</details>
+<details>
+<summary><a href="https://arxiv.org/pdf/2411.14402?">Multimodal Autoregressive Pre-training of Large Vision Encoders</a></summary>
+
+X
+
+</details>
