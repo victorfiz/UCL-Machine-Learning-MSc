@@ -15,6 +15,11 @@ If you're a current or prospective UCL student, this should cover a large fracti
 These stand out as being high-value documents in my educational journey:
 * [Reinforcement Learning](https://github.com/victorfiz/ucl_ml/blob/main/reinforcement_learning/Learning_Guide_RL.pdf): a guide by Nishant Aklecha
 * [LLM Visualisation](https://bbycroft.net/llm)
+* [Chip Huyen Blog](https://huyenchip.com/blog/)
+* [Lil'Log Blog](https://lilianweng.github.io/)
+* [All of Deep Learning in 1 hour](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+* [Simons Institute](https://www.youtube.com/@SimonsInstituteTOC/streams)
+  
 
 ### Serious Stuff
 If you're a professor or employer, this list of my submissions might be of interest:
