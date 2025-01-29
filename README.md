@@ -7,7 +7,7 @@ This is an archive of lectures, resources, and coursework I submitted from my ti
 If you're a current or prospective UCL student, this should cover a large fraction of the content:
 * [Probabilistic and Unsupervised Learning](https://github.com/victorfiz/ucl_ml/blob/main/unsupervised_learning/Probabilistic%20and%20Unsupervised%20Learning.pdf)
 * [Approximate Inference](https://github.com/victorfiz/ucl_ml/blob/main/approximate_inference/Approximate_Inference.pdf)
-* [Advanced Topics in Machine Learning]
+* [Advanced](https://github.com/victorfiz/ucl_ml/blob/main/advanced_topics/kernels.pdf) [Topics in Machine Learning](https://github.com/victorfiz/ucl_ml/blob/main/advanced_topics/convex-optimisation.pdf)
 * [Supervised Learning](https://github.com/victorfiz/ucl_ml/blob/main/supervised_learning/Supervised_Learning_Cheat_Sheet.pdf)
 * [Bayesian Deep Learning](https://github.com/victorfiz/ucl_ml/tree/main/bayesian_deep_learning/Bayesian%20Deep%20Learning)
 * [Reinforcement Learning](https://github.com/victorfiz/ucl_ml/tree/main/reinforcement_learning)
