@@ -1,5 +1,5 @@
 # UCL Machine Learning MSc
-This is an archive of lectures, resources, and coursework I submitted from my time at UCL.
+This is an archive of lectures, resources, and coursework from my time at UCL.
 
 ## Who are you and what are you looking for?
 
@@ -18,13 +18,16 @@ If you're a current or prospective UCL student, this should cover a large fracti
   
 
 ### ML Resource Scavenger
-These stand out as being high-value documents in my educational journey:
+These stand out as being high-value things I have come across:
 * [Reinforcement Learning](https://github.com/victorfiz/ucl_ml/blob/main/reinforcement_learning/Learning_Guide_RL.pdf): a guide by Nishant Aklecha
 * [LLM Visualisation](https://bbycroft.net/llm)
 * [Chip Huyen Blog](https://huyenchip.com/blog/)
 * [Lil'Log Blog](https://lilianweng.github.io/)
 * [All of Deep Learning in 1 hour](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 * [Simons Institute](https://www.youtube.com/@SimonsInstituteTOC/streams)
+* [Phil Wang Github – Architecture Implementations](https://github.com/lucidrains)
+* [Gabriel Mongaras](https://www.youtube.com/@gabrielmongaras/videos)
+* [Information Theory, Inference, and Learning Algorithms – David MacKay](https://www.inference.org.uk/itprnn/book.pdf)
   
 
 ### Serious Stuff
