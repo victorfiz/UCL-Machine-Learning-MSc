@@ -11,7 +11,7 @@ If you're a current or prospective UCL student, this should cover a large fracti
 * [Supervised Learning](https://github.com/victorfiz/ucl_ml/blob/main/supervised_learning/Supervised_Learning_Cheat_Sheet.pdf)
 * [Bayesian Deep Learning](https://github.com/victorfiz/ucl_ml/tree/main/bayesian_deep_learning/Bayesian%20Deep%20Learning)
 * [Reinforcement Learning](https://github.com/victorfiz/ucl_ml/tree/main/reinforcement_learning)
-* [Machine Learning Seminar]
+* [ML Seminar: GPs, Belief Prop, Norm Flows, Meta Learning](https://github.com/victorfiz/ucl_ml/blob/main/ml-seminar/machine-learning-seminar.pdf)
 * [Open Endedness and General Intelligence]
 * [Applied Deep Learning]
 * [Statistical Natural Language Processing]
