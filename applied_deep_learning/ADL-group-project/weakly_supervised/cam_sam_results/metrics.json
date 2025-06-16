@@ -1,0 +1,20 @@
+{
+    "classification_accuracy": 1.0,
+    "avg_metrics": {
+        "iou": 0.7873172445148472,
+        "dice": 0.8689747877902603,
+        "pixel_precision": 0.8132823664615606,
+        "pixel_recall": 0.9537874161059655,
+        "pixel_accuracy": 0.8315971172337674,
+        "boundary_f1": 0.016792590633678578
+    },
+    "std_metrics": {
+        "iou": 0.1538966013236887,
+        "dice": 0.14314345869928824,
+        "pixel_precision": 0.1273476663135782,
+        "pixel_recall": 0.16356704168606412,
+        "pixel_accuracy": 0.10875838949749171,
+        "boundary_f1": 0.01970189587070493
+    },
+    "correct_mask_ratio": 0.8317025440313112
+}

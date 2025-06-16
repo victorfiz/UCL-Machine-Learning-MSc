@@ -1,0 +1,13 @@
+CLASSIFICATION METRICS:
+Accuracy: 1.0000
+
+SEGMENTATION METRICS (evaluated on non-ambiguous regions only):
+Mean IoU: 0.7873 ± 0.1539
+Mean Dice: 0.8690 ± 0.1431
+Mean Pixel Precision: 0.8133 ± 0.1273
+Mean Pixel Recall: 0.9538 ± 0.1636
+Mean Pixel Accuracy: 0.8316 ± 0.1088
+Mean Boundary F1: 0.0168 ± 0.0197
+Correct Mask Ratio (IoU > 0.5): 0.8317
+Samples with GT masks: 3577/3584
+Samples with predicted masks: 3577/3577

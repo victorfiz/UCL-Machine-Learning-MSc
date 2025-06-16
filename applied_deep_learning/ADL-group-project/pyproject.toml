@@ -1,0 +1,17 @@
+[project]
+name = "adl-group-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "ipykernel>=6.29.5",
+    "jupytext>=1.16.7",
+    "matplotlib>=3.10.1",
+    "numpy>=2.2.4",
+    "pillow>=11.1.0",
+    "scikit-learn>=1.6.1",
+    "segmentation-models-pytorch>=0.4.0",
+    "torch>=2.6.0",
+    "torchvision>=0.21.0",
+]
