@@ -34,3 +34,4 @@ These stand out as being high-value things I have come across:
 If you're a professor or employer, this list of my submissions might be of interest:
 * [Supervised Learning](https://github.com/victorfiz/ucl_ml/blob/main/supervised_learning/CW2_COMP0078/Supervised_Learning_CW2.pdf)
 * [Probabilistic and Unsupervised Learning](https://github.com/victorfiz/ucl_ml/blob/main/unsupervised_learning/CW1_COMP0086/Unsupervised_learning_CW1.pdf)
+* [wiki-BALROG: Enhancing Language Model Agents Through Retrieval-Augmented Game Knowledge](https://github.com/victorfiz/UCL-Machine-Learning-MSc/blob/main/open-endedness_general_intelligence/wiki-BALROG.pdf)
