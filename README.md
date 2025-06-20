@@ -28,10 +28,11 @@ These stand out as being high-value things I have come across:
 * [Phil Wang Github – Architecture Implementations](https://github.com/lucidrains)
 * [Gabriel Mongaras](https://www.youtube.com/@gabrielmongaras/videos)
 * [Information Theory, Inference, and Learning Algorithms – David MacKay](https://www.inference.org.uk/itprnn/book.pdf)
-  
+* [GPU Programming](https://www.youtube.com/@szymonozog7862/videos)  
 
 ### Serious Stuff
 If you're a professor or employer, this list of my submissions might be of interest:
 * [Supervised Learning](https://github.com/victorfiz/ucl_ml/blob/main/supervised_learning/CW2_COMP0078/Supervised_Learning_CW2.pdf)
 * [Probabilistic and Unsupervised Learning](https://github.com/victorfiz/ucl_ml/blob/main/unsupervised_learning/CW1_COMP0086/Unsupervised_learning_CW1.pdf)
+* [Knowledge Distillation for Efficient Training of Quantized LLMs](https://github.com/victorfiz/UCL-Machine-Learning-MSc/blob/main/statistical_NLP/Knowledge%20Distillation%20for%20Efficient%20Training%20of%20Quantized%20LLMs.pdf)
 * [wiki-BALROG: Enhancing Language Model Agents Through Retrieval-Augmented Game Knowledge](https://github.com/victorfiz/UCL-Machine-Learning-MSc/blob/main/open-endedness_general_intelligence/wiki-BALROG.pdf)
