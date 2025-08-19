@@ -18,7 +18,7 @@ If you're a current or prospective UCL student, this should cover a large fracti
   
 
 ### ML Resource Scavenger
-These stand out as being high-value things I have come across:
+These stand out as being high-value materials, mostly unrelated to the course:
 * [Reinforcement Learning](https://github.com/victorfiz/ucl_ml/blob/main/reinforcement_learning/Learning_Guide_RL.pdf): a guide by Nishant Aklecha
 * [LLM Visualisation](https://bbycroft.net/llm)
 * [Chip Huyen Blog](https://huyenchip.com/blog/)
